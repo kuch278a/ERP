@@ -15,6 +15,7 @@
 | View routing | `src/components/ViewRouter.jsx` | Lazy view switch (L4 decomposition) |
 | Modal routing | `src/components/ModalRouter.jsx` | Lazy modal cluster (L4 decomposition) |
 | Domain state | `src/hooks/useEstate.js` | Domain data + mutation handlers (L4) |
+| API data layer | `src/lib/estateApi.js`, `src/lib/queryClient.js` | React Query hydration from v1 API (L4) |
 | UI state | `src/hooks/useUiState.js` | Theme, sidebar, search, notifications (L4) |
 | Overlay state | `src/hooks/useOverlayState.js` | Modal/detail/print state + Escape (L4) |
 | Canonical schemas | `src/schemas/` | Zod entity contracts (L1), shared by forms/API |

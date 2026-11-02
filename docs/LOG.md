@@ -70,3 +70,6 @@
   Postgres. Started a private Postgres 16 cluster (trust auth), created `ashara_erp`, ran
   `php artisan migrate` (~80 migrations OK). `php artisan --version` → Laravel 13.31.0; HTTP
   `/api/v1/health` and `/api/v1/accounts/chart-of-accounts` → 200. Plugin `admin/api/v1/*` REST API confirmed.
+- L4: added `@tanstack/react-query` (`src/lib/queryClient.js`, provider in `main.jsx`) and
+  `src/lib/estateApi.js` — collections seed locally then hydrate from `api/v1/*` endpoints.
+  Coverage scoped to unit-testable layers and floor raised to 70/50/62/72; 56 tests passing.

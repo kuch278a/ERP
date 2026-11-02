@@ -24,6 +24,7 @@ import {
   INITIAL_SUBCONTRACT_ORDERS,
 } from '../data/erpnextSchemas';
 import { useLocalStorageState } from './useLocalStorageState';
+import { ESTATE_ENDPOINTS, isApiEnabled, useRemoteCollection } from '../lib/estateApi';
 
 /**
  * Domain state + mutation handlers for the app (docs/PLAN.md §L4 decomposition).
@@ -37,16 +38,16 @@ export function useEstate() {
   const [clients] = useLocalStorageState('ashara_clients', INITIAL_CLIENTS);
 
   const [purchaseOrders, setPurchaseOrders] = useLocalStorageState('ashara_purchase_orders', INITIAL_PURCHASE_ORDERS);
-  const [suppliers] = useLocalStorageState('ashara_suppliers', INITIAL_SUPPLIERS);
+  const [suppliers, setSuppliers] = useLocalStorageState('ashara_suppliers', INITIAL_SUPPLIERS);
   const [stockItems, setStockItems] = useLocalStorageState('ashara_stock_items', INITIAL_STOCK_ITEMS);
-  const [warehouses] = useState(INITIAL_WAREHOUSES);
+  const [warehouses, setWarehouses] = useState(INITIAL_WAREHOUSES);
   const [stockEntries, setStockEntries] = useLocalStorageState('ashara_stock_entries', INITIAL_STOCK_ENTRIES);
-  const [stockLedgerEntries] = useLocalStorageState('ashara_stock_ledger', INITIAL_STOCK_LEDGER_ENTRIES);
-  const [chartOfAccounts] = useState(INITIAL_CHART_OF_ACCOUNTS);
+  const [stockLedgerEntries, setStockLedgerEntries] = useLocalStorageState('ashara_stock_ledger', INITIAL_STOCK_LEDGER_ENTRIES);
+  const [chartOfAccounts, setChartOfAccounts] = useState(INITIAL_CHART_OF_ACCOUNTS);
   const [glEntries, setGlEntries] = useLocalStorageState('ashara_gl_entries', INITIAL_GL_ENTRIES);
   const [journalEntries, setJournalEntries] = useLocalStorageState('ashara_journal_entries', INITIAL_JOURNAL_ENTRIES);
 
-  const [boms] = useLocalStorageState('ashara_boms', INITIAL_BOMS);
+  const [boms, setBoms] = useLocalStorageState('ashara_boms', INITIAL_BOMS);
   const [workOrders, setWorkOrders] = useLocalStorageState('ashara_work_orders', INITIAL_WORK_ORDERS);
   const [assets, setAssets] = useLocalStorageState('ashara_assets', INITIAL_ASSETS);
   const [opportunities, setOpportunities] = useLocalStorageState('ashara_opportunities', INITIAL_OPPORTUNITIES);
@@ -246,6 +247,22 @@ export function useEstate() {
   const handleUpdateIssueStatus = (issueId, nextStatus) => {
     setIssues((prev) => prev.map((issue) => (issue.id === issueId ? { ...issue, status: nextStatus } : issue)));
   };
+
+  // Background hydration from the v1 API (seed data stays until it resolves).
+  const apiEnabled = isApiEnabled();
+  useRemoteCollection(ESTATE_ENDPOINTS.purchaseOrders, setPurchaseOrders, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.suppliers, setSuppliers, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.stockItems, setStockItems, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.warehouses, setWarehouses, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.stockLedgerEntries, setStockLedgerEntries, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.boms, setBoms, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.workOrders, setWorkOrders, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.assets, setAssets, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.opportunities, setOpportunities, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.issues, setIssues, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.chartOfAccounts, setChartOfAccounts, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.glEntries, setGlEntries, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.journalEntries, setJournalEntries, apiEnabled);
 
   const values = {
     projects,

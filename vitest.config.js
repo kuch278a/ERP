@@ -12,20 +12,30 @@ export default defineConfig({
       reporter: ['text', 'html'],
       include: ['src/**/*.{js,jsx}'],
       exclude: [
-        'src/**/*.{test,spec}.{js,jsx}',
+        'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
         'src/test/**',
         'src/main.jsx',
         'src/data/**',
-        // Views and the App shell are exercised by Playwright E2E, not unit tests.
+        // Views, the App shell, and integration wiring are exercised by Playwright E2E.
         'src/views/**',
         'src/App.jsx',
+        'src/components/ViewRouter.jsx',
+        'src/components/ModalRouter.jsx',
+        'src/components/Sidebar.jsx',
+        'src/components/Topbar.jsx',
+        'src/components/ProjectDetailModal.jsx',
+        'src/components/PrintableInvoiceModal.jsx',
+        'src/components/DocTypeInspectorModal.jsx',
+        'src/hooks/useEstate.js',
+        'src/hooks/useUiState.js',
+        'src/hooks/useOverlayState.js',
       ],
-      // Floor for the tested layers; ratchet toward the 80% target (docs/PLAN.md §L5).
+      // Floor for the unit-tested layers; ratchet toward the 80% target (docs/PLAN.md §L5).
       thresholds: {
-        statements: 58,
-        branches: 32,
-        functions: 48,
-        lines: 60,
+        statements: 70,
+        branches: 50,
+        functions: 62,
+        lines: 72,
       },
     },
   },

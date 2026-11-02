@@ -34,6 +34,7 @@
 - [x] P4 decompose: extracted `useUiState` + `useOverlayState`; `App.jsx` 226 → 154 lines (~150 target).
 - [x] P5: Playwright E2E harness (`playwright.config.js`, `tests/e2e/smoke.spec.js`, `npm run e2e`) + CI `e2e` job.
 - [x] P0 TS: TypeScript enabled (`tsconfig.json`, strict, allowJs), `format`/`apiClient` migrated to `.ts`, `npm run typecheck` in CI.
+- [x] P4/L4 data layer: React Query (`QueryClientProvider`) + `src/lib/estateApi.js` hydration from the v1 API (seed fallback); coverage floor raised to 70/50/62/72.
 
 ## In progress
 
