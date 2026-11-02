@@ -27,3 +27,5 @@
 - Database: confirmed AureusERP's pgsql dialect support; switched backend
   `config/database.php` default to `pgsql` and added backend `.env.example` +
   `docker-compose.yml` (Postgres 16). ADR 0002 updated with the confirmation.
+- P4: added `react-router-dom` (`BrowserRouter` in `main.jsx`); `App.jsx` derives `currentView`
+  from the URL path with a known-views guard, so all views are deep-linkable with back/forward.

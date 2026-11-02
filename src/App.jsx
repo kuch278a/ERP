@@ -2,6 +2,14 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+// URL-addressable views (deep links — docs/PLAN.md §L4 routing)
+const KNOWN_VIEWS = new Set([
+  'dashboard', 'projects', 'ffe', 'snags', 'financials', 'buying', 'stock',
+  'manufacturing', 'assets', 'crm', 'support', 'erpnext_desk', 'clients',
+  'moodboards', 'materials', 'team',
+]);
 
 // Core Atelier Views (lazy-loaded for code-splitting — docs/PLAN.md §L4)
 const DashboardView = lazy(() => import('./views/DashboardView'));
@@ -71,7 +79,11 @@ export default function App() {
   // Theme state
   const [theme, setTheme] = useState(() => localStorage.getItem('ashara_theme') || 'dark');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [currentView, setCurrentView] = useState('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const route = location.pathname.replace(/^\/+/, '');
+  const currentView = KNOWN_VIEWS.has(route) ? route : 'dashboard';
+  const setCurrentView = (view) => navigate(`/${view}`);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Domain state — persisted via the shared hook (docs/PLAN.md §L4)

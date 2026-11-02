@@ -22,6 +22,7 @@
 - [x] P4 start: `App.jsx` views/modals code-split via `React.lazy` + `Suspense` (main chunk 570 kB → 304 kB).
 - [x] P4: removed all `alert()` calls (inline `role="alert"` errors in journal/stock modals; non-blocking notification for the client stub).
 - [x] P4: extracted `useLocalStorageState` hook (replaces 14 useState+useEffect persist blocks); Escape closes the top-most modal.
+- [x] P4: `react-router` routing — views are URL-addressable (`/projects`, `/stock`, …), with back/forward support.
 
 ## In progress
 
