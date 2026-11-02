@@ -16,7 +16,7 @@ Verdict = command exit code. Commands marked `NOT RUN` (backend) are blocked unt
 | App shell (`App.jsx`: routing, state) | all views | `npm run build` | build + full suite |
 | Full SPA | — | `npm run lint` → `npm run build` → `npm run test` | — |
 
-Last green: `master` tip — lint + build + 35 tests pass.
+Last green: `master` tip — lint + build + 39 tests pass.
 
 ## Backend (blocked — `NOT RUN`)
 
