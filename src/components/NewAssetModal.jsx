@@ -1,148 +1,176 @@
-import React, { useState } from 'react';
-import { X, Building2, Sparkles } from 'lucide-react';
+import React from 'react';
+import { Building2, Sparkles } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import Modal from './ui/Modal';
+import { makeDocId, toIsoDate } from '../lib/format';
+
+const assetFormSchema = z.object({
+  asset_name: z.string().trim().min(1, 'Asset name is required'),
+  asset_category: z.string().min(1),
+  gross_purchase_amount: z.coerce.number().positive('Enter a positive amount'),
+  purchase_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter a valid date'),
+  total_number_of_depreciations: z.coerce
+    .number()
+    .int()
+    .min(12, 'Useful life must be at least 12 months')
+    .max(240, 'Useful life must be at most 240 months'),
+  location: z.string().trim().min(1, 'Location is required'),
+});
+
+const fieldErrorStyle = { color: 'var(--status-danger)', fontSize: '12px', marginTop: '4px' };
 
 export default function NewAssetModal({ onClose, onSubmit }) {
-  const [assetName, setAssetName] = useState('');
-  const [category, setCategory] = useState('Fabrication Machinery');
-  const [purchaseAmount, setPurchaseAmount] = useState('');
-  const [purchaseDate, setPurchaseDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [location, setLocation] = useState('Al-Quoz Fabrication Atelier');
-  const [usefulLife, setUsefulLife] = useState(60);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(assetFormSchema),
+    defaultValues: {
+      asset_category: 'Fabrication Machinery',
+      purchase_date: toIsoDate(),
+      location: 'Al-Quoz Fabrication Atelier',
+      total_number_of_depreciations: 60,
+    },
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!assetName || !purchaseAmount) return;
-
-    const amount = Number(purchaseAmount);
-    const newAsset = {
-      id: `ASS-2026-${Math.floor(100 + Math.random() * 900)}`,
-      asset_name: assetName,
-      asset_category: category,
-      item_code: `EQUIP-${Math.floor(1000 + Math.random() * 9000)}`,
-      purchase_date: purchaseDate,
+  const submit = (data) => {
+    const amount = Number(data.gross_purchase_amount);
+    onSubmit({
+      id: makeDocId('ASS'),
+      asset_name: data.asset_name,
+      asset_category: data.asset_category,
+      item_code: makeDocId('EQUIP'),
+      purchase_date: data.purchase_date,
       gross_purchase_amount: amount,
-      depreciation_method: "Straight Line",
-      total_number_of_depreciations: Number(usefulLife) || 60,
+      depreciation_method: 'Straight Line',
+      total_number_of_depreciations: Number(data.total_number_of_depreciations),
       value_after_depreciation: amount,
-      location: location,
-      status: "Submitted"
-    };
-
-    onSubmit(newAsset);
+      location: data.location,
+      status: 'Submitted',
+    });
     onClose();
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth: '600px' }} onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--gold-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold-bright)' }}>
-              <Building2 size={18} />
+    <Modal
+      title="Register Capital Fixed Asset"
+      subtitle="ERPNext Assets Module (DocType: Asset)"
+      icon={Building2}
+      onClose={onClose}
+    >
+      <form onSubmit={handleSubmit(submit)} noValidate>
+        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="asset_name">
+              Asset Name / Equipment Title *
+            </label>
+            <input
+              id="asset_name"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Scantech 3D Optical Laser Material Scanner"
+              {...register('asset_name')}
+            />
+            {errors.asset_name && (
+              <span role="alert" style={fieldErrorStyle}>
+                {errors.asset_name.message}
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="asset_category">
+                Asset Category *
+              </label>
+              <select id="asset_category" className="form-input" {...register('asset_category')}>
+                <option value="Fabrication Machinery">Fabrication Machinery</option>
+                <option value="IT & 3D Compute">IT & 3D Compute</option>
+                <option value="Studio Showroom Fixtures">Studio Showroom Fixtures</option>
+                <option value="Fleet Vehicles">Fleet Vehicles</option>
+              </select>
             </div>
-            <div>
-              <h3 className="modal-title" style={{ margin: 0 }}>Register Capital Fixed Asset</h3>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>ERPNext Assets Module (DocType: Asset)</span>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="gross_purchase_amount">
+                Gross Acquisition Cost ($) *
+              </label>
+              <input
+                id="gross_purchase_amount"
+                type="number"
+                min="0"
+                step="100"
+                placeholder="e.g. 85000"
+                className="form-input"
+                {...register('gross_purchase_amount')}
+              />
+              {errors.gross_purchase_amount && (
+                <span role="alert" style={fieldErrorStyle}>
+                  {errors.gross_purchase_amount.message}
+                </span>
+              )}
             </div>
           </div>
-          <button className="btn-secondary" style={{ padding: '6px' }} onClick={onClose}>
-            <X size={18} />
-          </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="purchase_date">
+                Commission Date *
+              </label>
+              <input id="purchase_date" type="date" className="form-input" {...register('purchase_date')} />
+              {errors.purchase_date && (
+                <span role="alert" style={fieldErrorStyle}>
+                  {errors.purchase_date.message}
+                </span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="total_number_of_depreciations">
+                Useful Life (Months) *
+              </label>
+              <input
+                id="total_number_of_depreciations"
+                type="number"
+                min="12"
+                max="240"
+                className="form-input"
+                {...register('total_number_of_depreciations')}
+              />
+              {errors.total_number_of_depreciations && (
+                <span role="alert" style={fieldErrorStyle}>
+                  {errors.total_number_of_depreciations.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="location">
+              Physical Studio Location *
+            </label>
+            <input id="location" type="text" className="form-input" {...register('location')} />
+            {errors.location && (
+              <span role="alert" style={fieldErrorStyle}>
+                {errors.location.message}
+              </span>
+            )}
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="form-group">
-              <label className="form-label">Asset Name / Equipment Title *</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. Scantech 3D Optical Laser Material Scanner"
-                value={assetName}
-                onChange={e => setAssetName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label">Asset Category *</label>
-                <select
-                  className="form-input"
-                  value={category}
-                  onChange={e => setCategory(e.target.value)}
-                >
-                  <option value="Fabrication Machinery">Fabrication Machinery</option>
-                  <option value="IT & 3D Compute">IT & 3D Compute</option>
-                  <option value="Studio Showroom Fixtures">Studio Showroom Fixtures</option>
-                  <option value="Fleet Vehicles">Fleet Vehicles</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Gross Acquisition Cost ($) *</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="100"
-                  placeholder="e.g. 85000"
-                  className="form-input"
-                  value={purchaseAmount}
-                  onChange={e => setPurchaseAmount(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label">Commission Date *</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={purchaseDate}
-                  onChange={e => setPurchaseDate(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Useful Life (Months) *</label>
-                <input
-                  type="number"
-                  min="12"
-                  max="240"
-                  className="form-input"
-                  value={usefulLife}
-                  onChange={e => setUsefulLife(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Physical Studio Location *</label>
-              <input
-                type="text"
-                className="form-input"
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary">
-              <Sparkles size={16} />
-              <span>Capitalize Asset in Register</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button type="button" className="btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary">
+            <Sparkles size={16} />
+            <span>Capitalize Asset in Register</span>
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }

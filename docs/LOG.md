@@ -29,3 +29,7 @@
   `docker-compose.yml` (Postgres 16). ADR 0002 updated with the confirmation.
 - P4: added `react-router-dom` (`BrowserRouter` in `main.jsx`); `App.jsx` derives `currentView`
   from the URL path with a known-views guard, so all views are deep-linkable with back/forward.
+- L4/L5: added `src/components/ui/Modal.jsx` (role/aria dialog + focus trap via
+  `src/hooks/useFocusTrap.js`) and migrated `NewAssetModal` to react-hook-form + Zod.
+  Added jsdom/Testing Library setup (`vitest.config.js`, `src/test/setup.js`) and component
+  tests. 27 tests passing.
