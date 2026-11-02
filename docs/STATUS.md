@@ -16,6 +16,7 @@
 - [x] docs spine (`MAP`/`STATUS`/`LOG`/`CONTEXT`/`PRODUCT`), ADRs 0001–0005, `.kilo/` commands.
 - [x] Removed client-side ERP API secret; added `.env.example`.
 - [x] Added `src/lib/format.js`, `src/lib/apiClient.js`, `ErrorBoundary`; lint + build green.
+- [x] Added CI workflow (`.github/workflows/ci.yml`: lint + build).
 
 ## In progress
 
