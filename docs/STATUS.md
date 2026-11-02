@@ -49,7 +49,7 @@
 ## Blockers
 
 - Backend **repaired, running, and committed**: `composer.json`/autoload/`artisan`/`.env`/`.gitignore`/`package.json`/`phpunit.xml` restored; Postgres 16 cluster up; `php artisan migrate` OK; atelier API refactored to `Api\V1` controllers with passing feature tests. See `Ashara-ERP/REPAIR.md`.
-- Remaining feature work: back the L3 atelier controllers with plugin models + Sanctum auth; backend Vite/Tailwind build configs.
+- Remaining optional hardening: back the L3 atelier controllers with plugin models + Sanctum auth (current endpoints return static reference data).
 
 ## Database
 

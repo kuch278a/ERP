@@ -80,3 +80,5 @@
   (Health/Accounts/Buying/Stock/Manufacturing/Assets/Crm/Support/Desk); added `phpunit.xml`,
   `tests/TestBootstrapHelper.php` and `tests/Feature/Api/AtelierApiTest.php` (5 tests, 14 assertions passing).
   Committed the backend baseline (git).
+- Backend asset build restored: recreated `vite.config.js` (laravel-vite-plugin + `@tailwindcss/vite`);
+  `npm run build` succeeds and emits `public/build`. Backend repair + L3/L4 to-dos complete.
