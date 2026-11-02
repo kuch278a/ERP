@@ -16,4 +16,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      # TODO(L5): add `npm run typecheck` and `npm run test` once TypeScript and Vitest land.
+      - run: npm run test
+      # TODO(L5): add `npm run typecheck` once TypeScript lands.

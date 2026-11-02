@@ -45,12 +45,10 @@ export function toIsoDate(value = new Date()) {
 /**
  * Placeholder document id for the mock phase. Real ids are server-assigned,
  * monotonic, prefixed series (SINV-.YYYY.-.#####) — see ADR 0004.
- * @param {string} prefix @param {string} [series] @returns {string}
+ * @param {string} prefix @returns {string}
  */
-export function makeDocId(prefix, series) {
+export function makeDocId(prefix) {
   const year = new Date().getFullYear();
   const suffix = crypto.randomUUID().replace(/-/g, '').slice(0, 5).toUpperCase();
-  return series
-    ? `${prefix}-${series}-${year}-${suffix}`
-    : `${prefix}-${year}-${suffix}`;
+  return `${prefix}-${year}-${suffix}`;
 }

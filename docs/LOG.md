@@ -13,3 +13,5 @@
 - P1/P4 foundations: removed client-side ERP API secret (env-backed, masked in UI), added `.env.example`,
   `src/lib/format.js` (money/date/id rules), `src/lib/apiClient.js` (v1 envelope client),
   `src/components/ErrorBoundary.jsx` (wired in `main.jsx`). Lint + build green.
+- Added CI (`.github/workflows/ci.yml`) and started P5: installed Vitest, added `npm run test`,
+  `src/lib/format.test.js` (4 passing). A failing test caught a `makeDocId` signature bug, now fixed.

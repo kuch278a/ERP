@@ -17,6 +17,7 @@
 - [x] Removed client-side ERP API secret; added `.env.example`.
 - [x] Added `src/lib/format.js`, `src/lib/apiClient.js`, `ErrorBoundary`; lint + build green.
 - [x] Added CI workflow (`.github/workflows/ci.yml`: lint + build).
+- [x] P5 start: Vitest installed, `npm run test` wired, `src/lib/format.test.js` (4 passing), test in CI.
 
 ## In progress
 
