@@ -73,3 +73,6 @@
 - L4: added `@tanstack/react-query` (`src/lib/queryClient.js`, provider in `main.jsx`) and
   `src/lib/estateApi.js` — collections seed locally then hydrate from `api/v1/*` endpoints.
   Coverage scoped to unit-testable layers and floor raised to 70/50/62/72; 56 tests passing.
+- L2: restored backend `package.json` from `node_modules` (86 devDependencies, script
+  `Ashara-ERP/scripts/rebuild-package.cjs`). Vite/Tailwind configs still missing
+  (prebuilt `public/build` assets present).
