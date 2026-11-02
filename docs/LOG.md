@@ -15,3 +15,5 @@
   `src/components/ErrorBoundary.jsx` (wired in `main.jsx`). Lint + build green.
 - Added CI (`.github/workflows/ci.yml`) and started P5: installed Vitest, added `npm run test`,
   `src/lib/format.test.js` (4 passing). A failing test caught a `makeDocId` signature bug, now fixed.
+- P1: added Zod canonical schemas for 19 entities across `src/schemas/atelier.js` and
+  `src/schemas/erpnext.js`, with contract tests validating every seed record (23 tests passing).

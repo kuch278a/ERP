@@ -18,6 +18,7 @@
 - [x] Added `src/lib/format.js`, `src/lib/apiClient.js`, `ErrorBoundary`; lint + build green.
 - [x] Added CI workflow (`.github/workflows/ci.yml`: lint + build).
 - [x] P5 start: Vitest installed, `npm run test` wired, `src/lib/format.test.js` (4 passing), test in CI.
+- [x] P1: canonical Zod schemas (`src/schemas/atelier.js`, `erpnext.js`) + contract tests (23 passing).
 
 ## In progress
 

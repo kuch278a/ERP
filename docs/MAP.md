@@ -11,6 +11,7 @@
 | Context | `docs/CONTEXT.md` | Durable context for agents |
 | Decisions | `docs/adr/` | Architecture decision records |
 | Source | `src/` | SPA (views, components, data) |
+| Canonical schemas | `src/schemas/` | Zod entity contracts (L1), shared by forms/API |
 | Tests (planned) | `tests/`, `src/**/*.test.*` | L5 |
 | Backend | `C:\Users\X\Documents\Ashara-ERP` | Laravel + AureusERP |
 
