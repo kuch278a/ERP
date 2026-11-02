@@ -5,8 +5,8 @@ interior-design studio: projects & BIM stages, FF&E specification, site snagging
 financials, procurement, stock, manufacturing, fixed assets, CRM, and support
 (ported from ERPNext v16 module concepts).
 
-This repo is the **canonical SPA**; the backend is a Laravel + AureusERP app
-(`C:\Users\X\Documents\Ashara-ERP`).
+This repo is a **monorepo**: the canonical SPA (`src/`) plus the Laravel + AureusERP
+backend, vendored under `backend/`.
 
 ## Stack
 

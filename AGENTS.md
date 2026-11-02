@@ -1,17 +1,17 @@
-# AGENTS.md — ASHARA Atelier ERP (Frontend)
+# AGENTS.md — ASHARA Atelier ERP
 
 ## What this is
 
 React 19 + Vite 8 single-page app for **ASHARA**, an architecture & interior-design
-atelier ERP. It is the **frontend half of a two-repo system**; the backend is a
-Laravel + AureusERP application.
+atelier ERP. It is a monorepo: the SPA plus the Laravel + AureusERP backend.
 
-| Repo | Path | Role |
+| Part | Path | Role |
 |---|---|---|
-| Frontend (this repo) | `C:\Users\X\Documents\ERP` | SPA, canonical source |
-| Backend | `C:\Users\X\Documents\Ashara-ERP` | Laravel + `webkul`/AureusERP plugins, Filament admin |
+| Frontend | `ERP/src` | SPA, canonical source |
+| Backend | `ERP/backend` | Laravel + `webkul`/AureusERP plugins, Filament admin |
 
-This frontend is **canonical**. `Ashara-ERP/atelier-app` consumes built `dist` output only.
+The backend was originally the separate `Ashara-ERP` repo (`C:\Users\X\Documents\Ashara-ERP`)
+and is now vendored under `backend/`. This frontend is **canonical**.
 
 ## Plan of record
 
