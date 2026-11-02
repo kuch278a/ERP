@@ -40,3 +40,5 @@
 - L4: migrated NewProjectModal and NewFfeModal. 39 tests passing.
 - L4: migrated NewJournalEntryModal and NewStockEntryModal to the shared `Modal` with Zod
   validation (line-item state preserved; balance/warehouse rules). 43 tests passing.
+- L4: migrated NewPurchaseOrderModal (last form modal) to the shared `Modal` + Zod.
+  All source-level lint warnings cleared. 45 tests passing.
