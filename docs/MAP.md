@@ -19,6 +19,7 @@
 | Overlay state | `src/hooks/useOverlayState.js` | Modal/detail/print state + Escape (L4) |
 | Canonical schemas | `src/schemas/` | Zod entity contracts (L1), shared by forms/API |
 | Tests (planned) | `tests/`, `src/**/*.test.*` | L5 |
+| E2E | `tests/e2e/`, `playwright.config.js` | Playwright smoke (L5) |
 | Regression ledger | `REGRESSION.md` | Module → acceptance command map (L5) |
 | Backend | `C:\Users\X\Documents\Ashara-ERP` | Laravel + AureusERP |
 

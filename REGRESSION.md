@@ -15,6 +15,7 @@ Verdict = command exit code. Commands marked `NOT RUN` (backend) are blocked unt
 | `src/components/ui` (`Modal`) | all modals | `npx vitest run src/components/ui` | run full SPA suite |
 | App shell (`App.jsx`: routing, state) | all views | `npm run build` | build + full suite |
 | Full SPA | — | `npm run lint` → `npm run build` → `npm run test` | — |
+| Full SPA (E2E) | — | `npm run e2e:install` then `npm run e2e` | run before release |
 
 Last green: `master` tip — lint + build + 53 tests + coverage floor pass.
 

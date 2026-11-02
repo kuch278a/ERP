@@ -57,3 +57,5 @@
   `App.jsx` 490 → 226 lines. lint + build + 53 tests green.
 - L4 decompose: extracted `useUiState` and `useOverlayState` hooks; `App.jsx` 226 → 154 lines
   (roughly the ~150 target). lint + build + 53 tests green.
+- L5: added Playwright E2E harness (`playwright.config.js`, `tests/e2e/smoke.spec.js`,
+  `npm run e2e` / `e2e:install`) and a CI `e2e` job; `data-testid="app-root"` on the shell.

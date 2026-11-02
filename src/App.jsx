@@ -37,7 +37,7 @@ export default function App() {
   const openSnagsCount = d.snags.filter((s) => s.status !== 'Approved & Closed').length;
 
   return (
-    <div className="app-container">
+    <div className="app-container" data-testid="app-root">
       <Sidebar
         currentView={currentView}
         setCurrentView={setCurrentView}

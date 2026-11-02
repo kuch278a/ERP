@@ -32,6 +32,7 @@
 - [x] P4 decompose: extracted `ModalRouter.jsx` (lazy modal cluster); `App.jsx` 600 → 490 lines.
 - [x] P4 decompose: extracted `useEstate` hook (domain state + handlers); `App.jsx` 490 → 226 lines.
 - [x] P4 decompose: extracted `useUiState` + `useOverlayState`; `App.jsx` 226 → 154 lines (~150 target).
+- [x] P5: Playwright E2E harness (`playwright.config.js`, `tests/e2e/smoke.spec.js`, `npm run e2e`) + CI `e2e` job.
 
 ## In progress
 

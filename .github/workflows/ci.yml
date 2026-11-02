@@ -19,3 +19,16 @@ jobs:
       - run: npm run test:coverage
       - run: npm audit --audit-level=high
       # TODO(L5): add `npm run typecheck` once TypeScript lands.
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
