@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function ProjectDetailModal({ 
   project, 
@@ -10,6 +11,8 @@ export default function ProjectDetailModal({
   onUpdateProject 
 }) {
   const [activeTab, setActiveTab] = useState('phases'); // 'phases' | 'ffe' | 'snags' | 'financials'
+  const dialogRef = useRef(null);
+  useFocusTrap(dialogRef);
 
   if (!project) return null;
 
@@ -56,7 +59,15 @@ export default function ProjectDetailModal({
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-dialog" style={{ maxWidth: '840px' }} onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-dialog"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Project detail: ${project.name}`}
+        style={{ maxWidth: '840px' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Top Header with Cover Image */}
         <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
           <img 

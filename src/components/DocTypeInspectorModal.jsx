@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, FileCode, CheckCircle2, Copy, BookOpen, Layers } from 'lucide-react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { ERPNEXT_DOCTYPES } from '../data/erpnextSchemas';
 
 export default function DocTypeInspectorModal({ initialDocType = 'sales_invoice', onClose }) {
   const [selectedDocTypeKey, setSelectedDocTypeKey] = useState(initialDocType);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('fields'); // 'fields' | 'json'
+  const dialogRef = useRef(null);
+  useFocusTrap(dialogRef);
 
   const currentDocType = ERPNEXT_DOCTYPES[selectedDocTypeKey] || ERPNEXT_DOCTYPES.sales_invoice;
 
@@ -35,6 +38,10 @@ export default function DocTypeInspectorModal({ initialDocType = 'sales_invoice'
     <div className="modal-backdrop" onClick={onClose}>
       <div 
         className="modal-box" 
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="ERPNext DocType Inspector"
         style={{ maxWidth: '960px', width: '92vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         onClick={e => e.stopPropagation()}
       >
@@ -66,7 +73,7 @@ export default function DocTypeInspectorModal({ initialDocType = 'sales_invoice'
               </p>
             </div>
           </div>
-          <button className="btn-secondary" style={{ padding: '6px' }} onClick={onClose}>
+          <button className="btn-secondary" style={{ padding: '6px' }} onClick={onClose} aria-label="Close dialog">
             <X size={18} />
           </button>
         </div>

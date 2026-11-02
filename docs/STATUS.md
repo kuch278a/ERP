@@ -26,6 +26,7 @@
 - [x] P4/L5: shared accessible `Modal` + `useFocusTrap`; migrated all 11 form modals to `react-hook-form`/Zod (Asset, Opportunity, Work Order, Support Issue, Snag, Invoice, Project, FF&E, Journal Entry, Stock Entry, Purchase Order) with component tests.
 - [x] P5: `REGRESSION.md` module acceptance ledger added (backend rows blocked).
 - [x] P5: coverage gate (`@vitest/coverage-v8`) wired in `vitest.config.js` with a floor (58/32/48/60) and `npm run test:coverage` in CI. Tests for hook, API client, ErrorBoundary added.
+- [x] P4 a11y: all modals (incl. read-only `ProjectDetailModal`, `DocTypeInspectorModal`, `PrintableInvoiceModal`) now expose `role="dialog"`/`aria-modal` + focus trap.
 
 ## In progress
 

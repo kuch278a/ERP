@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { X, Printer } from 'lucide-react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function PrintableInvoiceModal({ invoice, onClose }) {
+  const dialogRef = useRef(null);
+  useFocusTrap(dialogRef);
+
   if (!invoice) return null;
 
   const formatCurrency = (val) => {
@@ -19,6 +23,10 @@ export default function PrintableInvoiceModal({ invoice, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div 
         className="modal-dialog" 
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Printable invoice"
         style={{ maxWidth: '800px', background: '#FFFFFF', color: '#1D1A16' }} 
         onClick={e => e.stopPropagation()}
       >
@@ -38,7 +46,7 @@ export default function PrintableInvoiceModal({ invoice, onClose }) {
               <Printer size={14} />
               <span>Print / Save PDF</span>
             </button>
-            <button className="modal-close-btn" onClick={onClose} style={{ color: '#1D1A16' }}>
+            <button className="modal-close-btn" onClick={onClose} style={{ color: '#1D1A16' }} aria-label="Close dialog">
               <X size={18} />
             </button>
           </div>

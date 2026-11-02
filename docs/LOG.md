@@ -45,3 +45,5 @@
 - L5: coverage gate — `@vitest/coverage-v8`, scoped to lib/hooks/components/ui (views+App
   covered by E2E), floor 58/32/48/60, `npm run test:coverage` in CI. Added tests for
   useLocalStorageState, apiClient, ErrorBoundary. 53 tests passing.
+- L4 a11y: added `role="dialog"`/`aria-modal` + `useFocusTrap` to the read-only modals
+  (ProjectDetailModal, DocTypeInspectorModal, PrintableInvoiceModal).
