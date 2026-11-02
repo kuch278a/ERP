@@ -47,7 +47,7 @@
 
 ## Blockers
 
-- Backend tree incomplete (missing root `composer.json`/`package.json`; `.git` has no HEAD).
+- Backend tree **partially repaired**: `composer.json` (rebuilt from `installed.json`), plugin autoload, `artisan`, `.env`, `.gitignore` restored — see `Ashara-ERP/REPAIR.md`. Remaining: `php artisan` hangs during Filament bootstrap; root `package.json` still missing; `.git` index needs a reset.
 
 ## Database
 

@@ -62,3 +62,7 @@
 - L0 TS: added `tsconfig.json` (strict, allowJs), `src/vite-env.d.ts`, migrated
   `src/lib/format.js` and `src/lib/apiClient.js` to `.ts`; added `npm run typecheck` + CI step.
   lint + typecheck + build + 53 tests green.
+- L2 prerequisite: repaired the Ashara-ERP backend — rebuilt `composer.json` from
+  `vendor/composer/installed.json` (script at `Ashara-ERP/scripts/rebuild-composer.cjs`), inlined
+  plugin PSR-4 maps (autoload now 15,763 classes), recreated `artisan`, added `.env` + `.gitignore`,
+  and `git init`. `php artisan` still hangs during Filament bootstrap (see `Ashara-ERP/REPAIR.md`).
