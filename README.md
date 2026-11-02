@@ -1,16 +1,51 @@
-# React + Vite
+# ASHARA — Architecture & Interior Atelier ERP
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Single-page frontend for **ASHARA**, an integrated ERP for an architecture and
+interior-design studio: projects & BIM stages, FF&E specification, site snagging,
+financials, procurement, stock, manufacturing, fixed assets, CRM, and support
+(ported from ERPNext v16 module concepts).
 
-Currently, two official plugins are available:
+This repo is the **canonical SPA**; the backend is a Laravel + AureusERP app
+(`C:\Users\X\Documents\Ashara-ERP`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React 19 · Vite 8 · `lucide-react`
+- Oxlint · Prettier
+- (planned) TypeScript · Vitest + Playwright
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting started
 
-## Expanding the Oxlint configuration
+```bash
+npm install
+npm run dev       # dev server
+npm run build     # production build
+npm run lint      # lint
+npm run preview   # preview the build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Architecture
+
+```
+src/
+├── App.jsx          # root: state, routing, modals (being decomposed — see plan)
+├── components/      # Sidebar, Topbar, modals, shared UI
+├── views/           # 16 module views (Dashboard, Projects, FF&E, …)
+├── data/            # mock datasets + ERPNext doctype schemas (to be replaced by API)
+├── assets/
+└── index.css        # design system (CSS variables, dark/light theme)
+```
+
+## Plan & status
+
+- `docs/PLAN.md` — bottom-up implementation plan (L0–L6).
+- `docs/PRODUCT.md` — capability contract and scope.
+- `docs/STATUS.md` — current state and progress.
+- `docs/MAP.md` — where every artifact lives.
+- `docs/adr/` — architecture decision records.
+
+## Scope (v1)
+
+Financial, supply chain, manufacturing, CRM, projects/FF&E/snags, RBAC, audit
+trail, REST API, dashboards. Single-company, single-tenant hosted. Payroll,
+budgeting, BI, customer portal, and non-REST integrations are deferred to v2.

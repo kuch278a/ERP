@@ -1262,11 +1262,13 @@ export const INITIAL_SUBCONTRACT_ORDERS = [
   }
 ];
 
-// Live Frappe / ERPNext REST API Integration Settings
+// External ERP integration settings.
+// NOTE: the live Frappe/ERPNext bridge is deprecated (see docs/adr/0001). No API
+// credentials may live in the client bundle — configure them server-side only.
 export const INITIAL_API_CONFIG = {
-  server_url: "http://localhost:8000",
-  api_key: "f7a9302b184e90c",
-  api_secret: "****************",
+  server_url: import.meta.env.VITE_ERPNEXT_URL || "http://localhost:8000",
+  api_key: "",
+  api_secret: "",
   connected: false,
   last_sync: "2026-10-23T09:40:00Z",
   auto_sync: true,

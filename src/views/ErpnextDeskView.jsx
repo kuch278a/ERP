@@ -232,7 +232,7 @@ export default function ErpnextDeskView({
             </div>
             <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--text-muted)', marginTop: '3px' }}>
               <span>Endpoint: <code style={{ color: 'var(--gold-bright)' }}>{apiConfig.server_url}</code></span>
-              <span>API Key: <code style={{ color: 'var(--text-secondary)' }}>{apiConfig.api_key}</code></span>
+              <span>API Key: <code style={{ color: 'var(--text-secondary)' }}>{apiConfig.api_key ? '••••••••' : 'server-side only'}</code></span>
               <span>Last Handshake: <strong style={{ color: 'var(--text-primary)' }}>Just now</strong></span>
             </div>
           </div>

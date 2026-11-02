@@ -3,6 +3,10 @@
   "plugins": ["react", "oxc"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-debugger": "error",
+    "eqeqeq": "warn",
+    "no-console": "off",
+    "no-unused-vars": "warn"
   }
 }
