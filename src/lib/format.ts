@@ -8,22 +8,17 @@
 export const CURRENCY = 'USD';
 export const VAT_RATE = 0.05;
 
-/** @param {number|string} amount @returns {number} whole minor units */
-export function toMinorUnits(amount) {
+/** Converts major units to whole minor units (cents). */
+export function toMinorUnits(amount: number | string): number {
   return Math.round(Number(amount) * 100);
 }
 
-/** @param {number} minor @returns {number} major units */
-export function fromMinorUnits(minor) {
+/** Converts minor units (cents) to major units. */
+export function fromMinorUnits(minor: number): number {
   return Number(minor) / 100;
 }
 
-/**
- * @param {number} amount major units
- * @param {string} [currency]
- * @returns {string}
- */
-export function formatMoney(amount, currency = CURRENCY) {
+export function formatMoney(amount: number, currency: string = CURRENCY): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
@@ -31,13 +26,12 @@ export function formatMoney(amount, currency = CURRENCY) {
   }).format(Number(amount) || 0);
 }
 
-/** @param {number} amount @param {number} [rate] @returns {number} */
-export function withVat(amount, rate = VAT_RATE) {
+export function withVat(amount: number, rate: number = VAT_RATE): number {
   return Number(amount) * (1 + rate);
 }
 
-/** @param {string|Date} value @returns {string} ISO date (YYYY-MM-DD) */
-export function toIsoDate(value = new Date()) {
+/** Returns an ISO date (YYYY-MM-DD). */
+export function toIsoDate(value: string | Date = new Date()): string {
   const d = value instanceof Date ? value : new Date(value);
   return d.toISOString().split('T')[0];
 }
@@ -45,9 +39,8 @@ export function toIsoDate(value = new Date()) {
 /**
  * Placeholder document id for the mock phase. Real ids are server-assigned,
  * monotonic, prefixed series (SINV-.YYYY.-.#####) — see ADR 0004.
- * @param {string} prefix @returns {string}
  */
-export function makeDocId(prefix) {
+export function makeDocId(prefix: string): string {
   const year = new Date().getFullYear();
   const suffix = crypto.randomUUID().replace(/-/g, '').slice(0, 5).toUpperCase();
   return `${prefix}-${year}-${suffix}`;

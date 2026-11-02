@@ -59,3 +59,6 @@
   (roughly the ~150 target). lint + build + 53 tests green.
 - L5: added Playwright E2E harness (`playwright.config.js`, `tests/e2e/smoke.spec.js`,
   `npm run e2e` / `e2e:install`) and a CI `e2e` job; `data-testid="app-root"` on the shell.
+- L0 TS: added `tsconfig.json` (strict, allowJs), `src/vite-env.d.ts`, migrated
+  `src/lib/format.js` and `src/lib/apiClient.js` to `.ts`; added `npm run typecheck` + CI step.
+  lint + typecheck + build + 53 tests green.

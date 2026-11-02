@@ -15,10 +15,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck
       - run: npm run build
       - run: npm run test:coverage
       - run: npm audit --audit-level=high
-      # TODO(L5): add `npm run typecheck` once TypeScript lands.
 
   e2e:
     runs-on: ubuntu-latest

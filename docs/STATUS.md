@@ -33,6 +33,7 @@
 - [x] P4 decompose: extracted `useEstate` hook (domain state + handlers); `App.jsx` 490 → 226 lines.
 - [x] P4 decompose: extracted `useUiState` + `useOverlayState`; `App.jsx` 226 → 154 lines (~150 target).
 - [x] P5: Playwright E2E harness (`playwright.config.js`, `tests/e2e/smoke.spec.js`, `npm run e2e`) + CI `e2e` job.
+- [x] P0 TS: TypeScript enabled (`tsconfig.json`, strict, allowJs), `format`/`apiClient` migrated to `.ts`, `npm run typecheck` in CI.
 
 ## In progress
 

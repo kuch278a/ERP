@@ -27,10 +27,12 @@ L4 frontend → L5 verification → L6 ops. No layer starts until the layer bene
 npm run dev       # Vite dev server
 npm run build     # production build
 npm run lint      # oxlint
+npm run typecheck # tsc --noEmit
+npm run test      # vitest run (unit + component)
+npm run test:coverage
+npm run e2e       # playwright (run e2e:install first)
 npm run preview   # preview the build
 ```
-
-Add `npm run typecheck` / `npm run test` as TypeScript and tests land.
 
 ## Conventions
 
