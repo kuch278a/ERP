@@ -31,3 +31,13 @@ blob-report
 *.njsproj
 *.sln
 *.sw?
+
+# Backend (Laravel + AureusERP) — heavy/generated
+/backend/vendor
+/backend/node_modules
+/backend/public/build
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*
+/backend/bootstrap/cache/*.php

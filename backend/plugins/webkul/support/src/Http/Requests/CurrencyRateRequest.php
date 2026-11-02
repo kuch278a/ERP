@@ -1,0 +1,60 @@
+<?php
+
+namespace Webkul\Support\Http\Requests;
+
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Support\Rules\WithinAllowedCompanies;
+
+class CurrencyRateRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
+        $rules = [
+            'name'       => [...$requiredRule, 'date'],
+            'rate'       => [...$requiredRule, 'numeric', 'gt:0'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id', new WithinAllowedCompanies],
+        ];
+
+        return $rules;
+    }
+
+    /**
+     * Get body parameters for API documentation.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'Rate effective date (YYYY-MM-DD format).',
+                'example'     => '2024-01-15',
+            ],
+            'rate' => [
+                'description' => 'Exchange rate (must be greater than 0).',
+                'example'     => 1.25,
+            ],
+            'company_id' => [
+                'description' => 'Company ID (optional, null for global rates).',
+                'example'     => 1,
+            ],
+        ];
+    }
+}
