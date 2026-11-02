@@ -55,3 +55,5 @@
   `App.jsx` 600 → 490 lines.
 - L4 decompose: extracted `src/hooks/useEstate.js` (all domain state + handlers);
   `App.jsx` 490 → 226 lines. lint + build + 53 tests green.
+- L4 decompose: extracted `useUiState` and `useOverlayState` hooks; `App.jsx` 226 → 154 lines
+  (roughly the ~150 target). lint + build + 53 tests green.
