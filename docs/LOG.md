@@ -38,3 +38,5 @@
   accessible `Modal` + react-hook-form + Zod, with component tests. 32 tests passing.
 - L4: migrated NewSnagModal and NewInvoiceModal (VAT via `VAT_RATE`). 35 tests passing.
 - L4: migrated NewProjectModal and NewFfeModal. 39 tests passing.
+- L4: migrated NewJournalEntryModal and NewStockEntryModal to the shared `Modal` with Zod
+  validation (line-item state preserved; balance/warehouse rules). 43 tests passing.

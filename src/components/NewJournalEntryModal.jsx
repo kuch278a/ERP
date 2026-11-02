@@ -1,15 +1,35 @@
 import React, { useState } from 'react';
-import { X, Scale, Plus, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Scale, Plus, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { z } from 'zod';
+import Modal from './ui/Modal';
+import { makeDocId } from '../lib/format';
+
+const journalSchema = z.object({
+  voucher_type: z.string().min(1),
+  posting_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter a valid posting date'),
+  user_remark: z.string().trim().min(1, 'Add a remark describing this accounting transaction.'),
+  accounts: z
+    .array(
+      z.object({
+        account: z.string().min(1),
+        debit: z.number().min(0),
+        credit: z.number().min(0),
+        party_type: z.string(),
+        party: z.string(),
+      })
+    )
+    .min(2, 'A journal entry needs at least two account rows.'),
+});
 
 export default function NewJournalEntryModal({ onClose, onSubmit, accountsList: _accountsList, clients, suppliers: _suppliers }) {
   const [voucherType, setVoucherType] = useState('Journal Entry');
   const [postingDate, setPostingDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [referenceNo, setReferenceNo] = useState('');
   const [userRemark, setUserRemark] = useState('');
-  
+
   const defaultAccounts = [
     { account: '1110 - Cash and Bank Balances (Emirates NBD)', debit: 50000, credit: 0, party_type: '', party: '' },
-    { account: '1120 - Accounts Receivable (Debtors)', debit: 0, credit: 50000, party_type: 'Customer', party: clients[0]?.name || '' }
+    { account: '1120 - Accounts Receivable (Debtors)', debit: 0, credit: 50000, party_type: 'Customer', party: clients[0]?.name || '' },
   ];
 
   const [entries, setEntries] = useState(defaultAccounts);
@@ -31,14 +51,11 @@ export default function NewJournalEntryModal({ onClose, onSubmit, accountsList: 
     '4130 - Site Supervision & Fit-Out Consultancy',
     '5110 - Cost of Goods Sold - Materials & Procurement',
     '5120 - Direct Subcontractor & Engineering Fees',
-    '5130 - Atelier Operating & 3D Cloud Compute Costs'
+    '5130 - Atelier Operating & 3D Cloud Compute Costs',
   ];
 
   const handleAddRow = () => {
-    setEntries([
-      ...entries,
-      { account: flatAccounts[0], debit: 0, credit: 0, party_type: '', party: '' }
-    ]);
+    setEntries([...entries, { account: flatAccounts[0], debit: 0, credit: 0, party_type: '', party: '' }]);
   };
 
   const handleRemoveRow = (index) => {
@@ -63,271 +80,255 @@ export default function NewJournalEntryModal({ onClose, onSubmit, accountsList: 
       setFormError('Debit and Credit must be equal before submitting the journal entry.');
       return;
     }
-    if (!userRemark.trim()) {
-      setFormError('Add a remark describing this accounting transaction.');
-      return;
-    }
-    setFormError('');
 
-    const seq = Date.now().toString().slice(-4);
-    const newJV = {
-      id: `JV-2026-${seq}`,
+    const parsed = journalSchema.safeParse({
       voucher_type: voucherType,
       posting_date: postingDate,
       user_remark: userRemark,
-      cheque_no: referenceNo || `REF-${seq}`,
-      cheque_date: postingDate,
-      status: 'Submitted',
-      total_debit: totalDebit,
-      total_credit: totalCredit,
-      difference: 0,
-      accounts: entries.map(r => ({
+      accounts: entries.map((r) => ({
         account: r.account,
         debit: Number(r.debit) || 0,
         credit: Number(r.credit) || 0,
         party_type: r.party_type,
-        party: r.party
-      }))
-    };
+        party: r.party,
+      })),
+    });
 
-    onSubmit(newJV);
+    if (!parsed.success) {
+      setFormError(parsed.error.issues[0].message);
+      return;
+    }
+    setFormError('');
+
+    onSubmit({
+      id: makeDocId('JV'),
+      voucher_type: parsed.data.voucher_type,
+      posting_date: parsed.data.posting_date,
+      user_remark: parsed.data.user_remark,
+      cheque_no: referenceNo || makeDocId('REF'),
+      cheque_date: parsed.data.posting_date,
+      status: 'Submitted',
+      total_debit: totalDebit,
+      total_credit: totalCredit,
+      difference: 0,
+      accounts: parsed.data.accounts,
+    });
     onClose();
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth: '860px' }} onClick={e => e.stopPropagation()}>
-        {/* Header */}
-        <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--gold-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold-bright)' }}>
-              <Scale size={18} />
-            </div>
-            <div>
-              <h3 className="modal-title" style={{ margin: 0 }}>Create Journal Entry Voucher</h3>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>ERPNext Accounts Module (DocType: Journal Entry)</span>
-            </div>
-          </div>
-          <button className="btn-secondary" style={{ padding: '6px' }} onClick={onClose}>
-            <X size={18} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-            {/* Top Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label">Voucher Type *</label>
-                <select
-                  className="form-input"
-                  value={voucherType}
-                  onChange={e => setVoucherType(e.target.value)}
-                >
-                  <option value="Journal Entry">Journal Entry</option>
-                  <option value="Bank Entry">Bank Entry</option>
-                  <option value="Cash Entry">Cash Entry</option>
-                  <option value="Credit Card Entry">Credit Card Entry</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Posting Date *</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={postingDate}
-                  onChange={e => setPostingDate(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Cheque / Reference No</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. TRF-2026-ENBD-88"
-                  value={referenceNo}
-                  onChange={e => setReferenceNo(e.target.value)}
-                />
-              </div>
-            </div>
-
+    <Modal
+      title="Create Journal Entry Voucher"
+      subtitle="ERPNext Accounts Module (DocType: Journal Entry)"
+      icon={Scale}
+      onClose={onClose}
+      maxWidth="860px"
+    >
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
             <div className="form-group">
-              <label className="form-label">User Remark / Memo *</label>
+              <label className="form-label" htmlFor="voucherType">
+                Voucher Type *
+              </label>
+              <select id="voucherType" className="form-input" value={voucherType} onChange={(e) => setVoucherType(e.target.value)}>
+                <option value="Journal Entry">Journal Entry</option>
+                <option value="Bank Entry">Bank Entry</option>
+                <option value="Cash Entry">Cash Entry</option>
+                <option value="Credit Card Entry">Credit Card Entry</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="postingDate">
+                Posting Date *
+              </label>
+              <input id="postingDate" type="date" className="form-input" value={postingDate} onChange={(e) => setPostingDate(e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="referenceNo">
+                Cheque / Reference No
+              </label>
               <input
+                id="referenceNo"
                 type="text"
                 className="form-input"
-                placeholder="Reason for double-entry allocation..."
-                value={userRemark}
-                onChange={e => setUserRemark(e.target.value)}
-                required
+                placeholder="e.g. TRF-2026-ENBD-88"
+                value={referenceNo}
+                onChange={(e) => setReferenceNo(e.target.value)}
               />
             </div>
-
-            {/* Accounting Rows */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label className="form-label" style={{ margin: 0, fontWeight: '600' }}>
-                  Accounting Entries (Total Dr must equal Total Cr)
-                </label>
-                <button
-                  type="button"
-                  className="btn-secondary btn-sm"
-                  onClick={handleAddRow}
-                  style={{ fontSize: '11.5px', padding: '4px 10px' }}
-                >
-                  <Plus size={14} />
-                  <span>Add Account Row</span>
-                </button>
-              </div>
-
-              <div className="table-container" style={{ margin: 0 }}>
-                <table className="data-table" style={{ fontSize: '12px' }}>
-                  <thead>
-                    <tr>
-                      <th style={{ width: '40%' }}>Account Head</th>
-                      <th style={{ width: '25%' }}>Party (Optional)</th>
-                      <th style={{ width: '15%' }}>Debit ($)</th>
-                      <th style={{ width: '15%' }}>Credit ($)</th>
-                      <th style={{ width: '5%' }}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {entries.map((row, idx) => (
-                      <tr key={idx}>
-                        <td>
-                          <select
-                            className="form-input"
-                            style={{ padding: '6px 8px', fontSize: '11.5px' }}
-                            value={row.account}
-                            onChange={e => handleRowChange(idx, 'account', e.target.value)}
-                          >
-                            {flatAccounts.map((acc, aIdx) => (
-                              <option key={aIdx} value={acc}>
-                                {acc}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            className="form-input"
-                            style={{ padding: '6px 8px', fontSize: '11.5px' }}
-                            placeholder="Customer / Supplier"
-                            value={row.party}
-                            onChange={e => handleRowChange(idx, 'party', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            className="form-input"
-                            style={{ padding: '6px 8px', fontSize: '12px' }}
-                            value={row.debit}
-                            onChange={e => handleRowChange(idx, 'debit', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            className="form-input"
-                            style={{ padding: '6px 8px', fontSize: '12px' }}
-                            value={row.credit}
-                            onChange={e => handleRowChange(idx, 'credit', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          {entries.length > 2 && (
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              style={{ padding: '6px', color: 'var(--status-danger)' }}
-                              onClick={() => handleRemoveRow(idx)}
-                            >
-                              <Trash2 size={12} />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Balance bar */}
-              <div 
-                style={{ 
-                  marginTop: '12px', 
-                  padding: '12px 18px', 
-                  borderRadius: 'var(--radius-md)', 
-                  background: isBalanced ? 'rgba(62,136,91,0.1)' : 'rgba(200,70,48,0.1)',
-                  border: isBalanced ? '1px solid var(--status-success)' : '1px solid var(--status-danger)',
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center' 
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {isBalanced ? (
-                    <>
-                      <CheckCircle2 size={16} style={{ color: 'var(--status-success)' }} />
-                      <span style={{ fontSize: '12.5px', color: 'var(--status-success)', fontWeight: '600' }}>
-                        Ledger Balanced (Dr = Cr)
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle size={16} style={{ color: 'var(--status-danger)' }} />
-                      <span style={{ fontSize: '12.5px', color: 'var(--status-danger)', fontWeight: '600' }}>
-                        Imbalance: Difference of ${difference.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                <div style={{ display: 'flex', gap: '20px', fontSize: '13px' }}>
-                  <span>Total Debit: <strong style={{ color: 'var(--text-primary)' }}>${totalDebit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></span>
-                  <span>Total Credit: <strong style={{ color: 'var(--text-primary)' }}>${totalCredit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></span>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {formError && (
+          <div className="form-group">
+            <label className="form-label" htmlFor="userRemark">
+              User Remark / Memo *
+            </label>
+            <input
+              id="userRemark"
+              type="text"
+              className="form-input"
+              placeholder="Reason for double-entry allocation..."
+              value={userRemark}
+              onChange={(e) => setUserRemark(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="form-label" style={{ margin: 0, fontWeight: '600' }}>
+                Accounting Entries (Total Dr must equal Total Cr)
+              </label>
+              <button type="button" className="btn-secondary btn-sm" onClick={handleAddRow} style={{ fontSize: '11.5px', padding: '4px 10px' }}>
+                <Plus size={14} />
+                <span>Add Account Row</span>
+              </button>
+            </div>
+
+            <div className="table-container" style={{ margin: 0 }}>
+              <table className="data-table" style={{ fontSize: '12px' }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: '40%' }}>Account Head</th>
+                    <th style={{ width: '25%' }}>Party (Optional)</th>
+                    <th style={{ width: '15%' }}>Debit ($)</th>
+                    <th style={{ width: '15%' }}>Credit ($)</th>
+                    <th style={{ width: '5%' }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entries.map((row, idx) => (
+                    <tr key={idx}>
+                      <td>
+                        <select
+                          className="form-input"
+                          style={{ padding: '6px 8px', fontSize: '11.5px' }}
+                          value={row.account}
+                          onChange={(e) => handleRowChange(idx, 'account', e.target.value)}
+                        >
+                          {flatAccounts.map((acc, aIdx) => (
+                            <option key={aIdx} value={acc}>
+                              {acc}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="form-input"
+                          style={{ padding: '6px 8px', fontSize: '11.5px' }}
+                          placeholder="Customer / Supplier"
+                          value={row.party}
+                          onChange={(e) => handleRowChange(idx, 'party', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          className="form-input"
+                          style={{ padding: '6px 8px', fontSize: '12px' }}
+                          value={row.debit}
+                          onChange={(e) => handleRowChange(idx, 'debit', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          className="form-input"
+                          style={{ padding: '6px 8px', fontSize: '12px' }}
+                          value={row.credit}
+                          onChange={(e) => handleRowChange(idx, 'credit', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        {entries.length > 2 && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ padding: '6px', color: 'var(--status-danger)' }}
+                            onClick={() => handleRemoveRow(idx)}
+                            aria-label={`Remove row ${idx + 1}`}
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
             <div
-              role="alert"
               style={{
-                margin: '0 24px 12px',
-                padding: '10px 14px',
+                marginTop: '12px',
+                padding: '12px 18px',
                 borderRadius: 'var(--radius-md)',
-                background: 'rgba(200,70,48,0.1)',
-                border: '1px solid var(--status-danger)',
-                color: 'var(--status-danger)',
-                fontSize: '12.5px'
+                background: isBalanced ? 'rgba(62,136,91,0.1)' : 'rgba(200,70,48,0.1)',
+                border: isBalanced ? '1px solid var(--status-success)' : '1px solid var(--status-danger)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              {formError}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {isBalanced ? (
+                  <>
+                    <CheckCircle2 size={16} style={{ color: 'var(--status-success)' }} />
+                    <span style={{ fontSize: '12.5px', color: 'var(--status-success)', fontWeight: '600' }}>Ledger Balanced (Dr = Cr)</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle size={16} style={{ color: 'var(--status-danger)' }} />
+                    <span style={{ fontSize: '12.5px', color: 'var(--status-danger)', fontWeight: '600' }}>
+                      Imbalance: Difference of ${difference.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </span>
+                  </>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '20px', fontSize: '13px' }}>
+                <span>
+                  Total Debit: <strong style={{ color: 'var(--text-primary)' }}>${totalDebit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+                </span>
+                <span>
+                  Total Credit: <strong style={{ color: 'var(--text-primary)' }}>${totalCredit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+                </span>
+              </div>
             </div>
-          )}
-
-          <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary" disabled={!isBalanced}>
-              <Scale size={16} />
-              <span>Post Journal Entry (DocStatus: Submitted)</span>
-            </button>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        {formError && (
+          <div
+            role="alert"
+            style={{
+              margin: '0 24px 12px',
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-md)',
+              background: 'rgba(200,70,48,0.1)',
+              border: '1px solid var(--status-danger)',
+              color: 'var(--status-danger)',
+              fontSize: '12.5px',
+            }}
+          >
+            {formError}
+          </div>
+        )}
+
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button type="button" className="btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary" disabled={!isBalanced}>
+            <Scale size={16} />
+            <span>Post Journal Entry (DocStatus: Submitted)</span>
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
