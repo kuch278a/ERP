@@ -66,3 +66,7 @@
   `vendor/composer/installed.json` (script at `Ashara-ERP/scripts/rebuild-composer.cjs`), inlined
   plugin PSR-4 maps (autoload now 15,763 classes), recreated `artisan`, added `.env` + `.gitignore`,
   and `git init`. `php artisan` still hangs during Filament bootstrap (see `Ashara-ERP/REPAIR.md`).
+- L2 boot **fixed**: root-caused the artisan hang to plugin boot querying the DB with no reachable
+  Postgres. Started a private Postgres 16 cluster (trust auth), created `ashara_erp`, ran
+  `php artisan migrate` (~80 migrations OK). `php artisan --version` → Laravel 13.31.0; HTTP
+  `/api/v1/health` and `/api/v1/accounts/chart-of-accounts` → 200. Plugin `admin/api/v1/*` REST API confirmed.

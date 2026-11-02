@@ -47,7 +47,8 @@
 
 ## Blockers
 
-- Backend tree **partially repaired**: `composer.json` (rebuilt from `installed.json`), plugin autoload, `artisan`, `.env`, `.gitignore` restored — see `Ashara-ERP/REPAIR.md`. Remaining: `php artisan` hangs during Filament bootstrap; root `package.json` still missing; `.git` index needs a reset.
+- Backend **repaired and running**: `composer.json`/autoload/`artisan`/`.env`/`.gitignore` restored; a private Postgres 16 cluster is up; `php artisan migrate` applied ~80 migrations; `/api/v1/health` → 200. See `Ashara-ERP/REPAIR.md`.
+- Remaining feature work: L3 atelier endpoints (controllers) + L4 SPA data layer; root backend `package.json`; backend `.git` index reset.
 
 ## Database
 
