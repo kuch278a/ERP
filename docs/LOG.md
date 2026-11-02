@@ -47,3 +47,5 @@
   useLocalStorageState, apiClient, ErrorBoundary. 53 tests passing.
 - L4 a11y: added `role="dialog"`/`aria-modal` + `useFocusTrap` to the read-only modals
   (ProjectDetailModal, DocTypeInspectorModal, PrintableInvoiceModal).
+- L6: added `docs/SECURITY.md` (secret handling, recommended CSP, dependency policy) and
+  `npm audit --audit-level=high` to CI. Audit: 0 vulnerabilities.

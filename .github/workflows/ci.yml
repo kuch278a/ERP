@@ -17,4 +17,5 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run test:coverage
+      - run: npm audit --audit-level=high
       # TODO(L5): add `npm run typecheck` once TypeScript lands.

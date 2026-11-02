@@ -10,6 +10,7 @@
 | Log | `docs/LOG.md` | Chronological engineering log |
 | Context | `docs/CONTEXT.md` | Durable context for agents |
 | Decisions | `docs/adr/` | Architecture decision records |
+| Security | `docs/SECURITY.md` | Secrets, CSP, dependency policy (L6) |
 | Source | `src/` | SPA (views, components, data) |
 | Canonical schemas | `src/schemas/` | Zod entity contracts (L1), shared by forms/API |
 | Tests (planned) | `tests/`, `src/**/*.test.*` | L5 |
