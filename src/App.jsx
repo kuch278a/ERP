@@ -1,9 +1,10 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ViewRouter from './components/ViewRouter';
+import ModalRouter from './components/ModalRouter';
 
 // URL-addressable views (deep links — docs/PLAN.md §L4 routing)
 const KNOWN_VIEWS = new Set([
@@ -14,21 +15,7 @@ const KNOWN_VIEWS = new Set([
 
 // Views are rendered by <ViewRouter /> (lazy-loaded there).
 
-// Modals
-const ProjectDetailModal = lazy(() => import('./components/ProjectDetailModal'));
-const NewProjectModal = lazy(() => import('./components/NewProjectModal'));
-const NewFfeModal = lazy(() => import('./components/NewFfeModal'));
-const NewSnagModal = lazy(() => import('./components/NewSnagModal'));
-const NewInvoiceModal = lazy(() => import('./components/NewInvoiceModal'));
-const PrintableInvoiceModal = lazy(() => import('./components/PrintableInvoiceModal'));
-const NewPurchaseOrderModal = lazy(() => import('./components/NewPurchaseOrderModal'));
-const NewStockEntryModal = lazy(() => import('./components/NewStockEntryModal'));
-const NewJournalEntryModal = lazy(() => import('./components/NewJournalEntryModal'));
-const DocTypeInspectorModal = lazy(() => import('./components/DocTypeInspectorModal'));
-const NewWorkOrderModal = lazy(() => import('./components/NewWorkOrderModal'));
-const NewAssetModal = lazy(() => import('./components/NewAssetModal'));
-const NewOpportunityModal = lazy(() => import('./components/NewOpportunityModal'));
-const NewSupportIssueModal = lazy(() => import('./components/NewSupportIssueModal'));
+// Modals are rendered by <ModalRouter /> (lazy-loaded there).
 
 // Mock Data
 import { 
@@ -474,127 +461,30 @@ export default function App() {
       </div>
 
       {/* Modals */}
-      <Suspense fallback={null}>
-      {inspectingProject && (
-        <ProjectDetailModal
-          project={inspectingProject}
-          onClose={() => setInspectingProject(null)}
-          ffeItems={ffeItems}
-          snags={snags}
-          invoices={invoices}
-          onUpdateProject={handleUpdateProject}
-        />
-      )}
-
-      {inspectingDocType && (
-        <DocTypeInspectorModal
-          initialDocType={inspectingDocType}
-          onClose={() => setInspectingDocType(null)}
-        />
-      )}
-
-      {activeModal === 'newProject' && (
-        <NewProjectModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateProject}
-          clients={clients}
-        />
-      )}
-
-      {activeModal === 'newFfe' && (
-        <NewFfeModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateFfe}
-          projects={projects}
-        />
-      )}
-
-      {activeModal === 'newSnag' && (
-        <NewSnagModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateSnag}
-          projects={projects}
-        />
-      )}
-
-      {activeModal === 'newInvoice' && (
-        <NewInvoiceModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateInvoice}
-          projects={projects}
-        />
-      )}
-
-      {activeModal === 'newPO' && (
-        <NewPurchaseOrderModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreatePO}
-          suppliers={suppliers}
-          projects={projects}
-          warehouses={warehouses}
-        />
-      )}
-
-      {activeModal === 'newStockEntry' && (
-        <NewStockEntryModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateStockEntry}
-          stockItems={stockItems}
-          warehouses={warehouses}
-          projects={projects}
-        />
-      )}
-
-      {activeModal === 'newJournalEntry' && (
-        <NewJournalEntryModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateJournalEntry}
-          accountsList={chartOfAccounts}
-          clients={clients}
-          suppliers={suppliers}
-        />
-      )}
-
-      {activeModal === 'newWorkOrder' && (
-        <NewWorkOrderModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateWorkOrder}
-          boms={boms}
-          projects={projects}
-          warehouses={warehouses}
-        />
-      )}
-
-      {activeModal === 'newAsset' && (
-        <NewAssetModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateAsset}
-        />
-      )}
-
-      {activeModal === 'newOpportunity' && (
-        <NewOpportunityModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateOpportunity}
-        />
-      )}
-
-      {activeModal === 'newIssue' && (
-        <NewSupportIssueModal
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleCreateIssue}
-          clients={clients}
-          projects={projects}
-        />
-      )}
-
-      {printingInvoice && (
-        <PrintableInvoiceModal
-          invoice={printingInvoice}
-          onClose={() => setPrintingInvoice(null)}
-        />
-      )}
-      </Suspense>
+      <ModalRouter
+        state={{ inspectingProject, inspectingDocType, activeModal, printingInvoice }}
+        data={{ ffeItems, snags, invoices, clients, projects, suppliers, warehouses, stockItems, boms, chartOfAccounts }}
+        handlers={{
+          closeModal: () => setActiveModal(null),
+          closeProjectDetail: () => setInspectingProject(null),
+          closeDocType: () => setInspectingDocType(null),
+          closePrint: () => setPrintingInvoice(null),
+          onUpdateProject: handleUpdateProject,
+          create: {
+            project: handleCreateProject,
+            ffe: handleCreateFfe,
+            snag: handleCreateSnag,
+            invoice: handleCreateInvoice,
+            po: handleCreatePO,
+            stockEntry: handleCreateStockEntry,
+            journalEntry: handleCreateJournalEntry,
+            workOrder: handleCreateWorkOrder,
+            asset: handleCreateAsset,
+            opportunity: handleCreateOpportunity,
+            issue: handleCreateIssue,
+          },
+        }}
+      />
     </div>
   );
 }

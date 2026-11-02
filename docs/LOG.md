@@ -51,3 +51,5 @@
   `npm audit --audit-level=high` to CI. Audit: 0 vulnerabilities.
 - L4 decompose: extracted `src/components/ViewRouter.jsx` (lazy view switch + prop bundle);
   `App.jsx` 732 → 600 lines. lint + build + 53 tests green.
+- L4 decompose: extracted `src/components/ModalRouter.jsx` (lazy modal cluster);
+  `App.jsx` 600 → 490 lines.

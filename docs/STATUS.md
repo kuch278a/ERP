@@ -29,6 +29,7 @@
 - [x] P4 a11y: all modals (incl. read-only `ProjectDetailModal`, `DocTypeInspectorModal`, `PrintableInvoiceModal`) now expose `role="dialog"`/`aria-modal` + focus trap.
 - [x] P6/L6: `docs/SECURITY.md` (secrets, CSP, dependency policy) + `npm audit --audit-level=high` in CI (0 vulnerabilities).
 - [x] P4 decompose: extracted `ViewRouter.jsx` (lazy view switch); `App.jsx` 732 → 600 lines.
+- [x] P4 decompose: extracted `ModalRouter.jsx` (lazy modal cluster); `App.jsx` 600 → 490 lines.
 
 ## In progress
 

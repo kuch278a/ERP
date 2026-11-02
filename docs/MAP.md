@@ -13,6 +13,7 @@
 | Security | `docs/SECURITY.md` | Secrets, CSP, dependency policy (L6) |
 | Source | `src/` | SPA (views, components, data) |
 | View routing | `src/components/ViewRouter.jsx` | Lazy view switch (L4 decomposition) |
+| Modal routing | `src/components/ModalRouter.jsx` | Lazy modal cluster (L4 decomposition) |
 | Canonical schemas | `src/schemas/` | Zod entity contracts (L1), shared by forms/API |
 | Tests (planned) | `tests/`, `src/**/*.test.*` | L5 |
 | Regression ledger | `REGRESSION.md` | Module → acceptance command map (L5) |
