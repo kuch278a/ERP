@@ -82,3 +82,5 @@
   Committed the backend baseline (git).
 - Backend asset build restored: recreated `vite.config.js` (laravel-vite-plugin + `@tailwindcss/vite`);
   `npm run build` succeeds and emits `public/build`. Backend repair + L3/L4 to-dos complete.
+- Hardening: protected atelier `api/v1/*` routes with Sanctum (`/health` public); API tests now
+  6 (incl. 401) and pass. SPA hydration guard ignores empty responses. Frontend gates green.

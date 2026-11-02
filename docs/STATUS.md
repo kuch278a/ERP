@@ -35,6 +35,7 @@
 - [x] P5: Playwright E2E harness (`playwright.config.js`, `tests/e2e/smoke.spec.js`, `npm run e2e`) + CI `e2e` job.
 - [x] P0 TS: TypeScript enabled (`tsconfig.json`, strict, allowJs), `format`/`apiClient` migrated to `.ts`, `npm run typecheck` in CI.
 - [x] P4/L4 data layer: React Query (`QueryClientProvider`) + `src/lib/estateApi.js` hydration from the v1 API (seed fallback); coverage floor raised to 70/50/62/72.
+- [x] L2/L3 hardening: atelier API routes now behind Sanctum auth (health public); SPA hydration ignores empty responses.
 
 ## In progress
 
@@ -49,7 +50,7 @@
 ## Blockers
 
 - Backend **repaired, running, and committed**: `composer.json`/autoload/`artisan`/`.env`/`.gitignore`/`package.json`/`phpunit.xml` restored; Postgres 16 cluster up; `php artisan migrate` OK; atelier API refactored to `Api\V1` controllers with passing feature tests. See `Ashara-ERP/REPAIR.md`.
-- Remaining optional hardening: back the L3 atelier controllers with plugin models + Sanctum auth (current endpoints return static reference data).
+- Remaining optional hardening: back the L3 atelier controllers with the plugin Eloquent models + seed reference data (current endpoints return static reference data).
 
 ## Database
 
