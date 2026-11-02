@@ -13,6 +13,7 @@
 | Source | `src/` | SPA (views, components, data) |
 | Canonical schemas | `src/schemas/` | Zod entity contracts (L1), shared by forms/API |
 | Tests (planned) | `tests/`, `src/**/*.test.*` | L5 |
+| Regression ledger | `REGRESSION.md` | Module → acceptance command map (L5) |
 | Backend | `C:\Users\X\Documents\Ashara-ERP` | Laravel + AureusERP |
 
 ## Layer ↔ artifact

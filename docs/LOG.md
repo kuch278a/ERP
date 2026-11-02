@@ -33,3 +33,4 @@
   `src/hooks/useFocusTrap.js`) and migrated `NewAssetModal` to react-hook-form + Zod.
   Added jsdom/Testing Library setup (`vitest.config.js`, `src/test/setup.js`) and component
   tests. 27 tests passing.
+- L5: added `REGRESSION.md` (module → acceptance-command ledger; backend rows blocked).

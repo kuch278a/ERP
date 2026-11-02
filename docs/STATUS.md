@@ -24,6 +24,7 @@
 - [x] P4: extracted `useLocalStorageState` hook (replaces 14 useState+useEffect persist blocks); Escape closes the top-most modal.
 - [x] P4: `react-router` routing — views are URL-addressable (`/projects`, `/stock`, …), with back/forward support.
 - [x] P4/L5: shared accessible `Modal` + `useFocusTrap`; migrated `NewAssetModal` to `react-hook-form` + Zod; component tests (jsdom + Testing Library).
+- [x] P5: `REGRESSION.md` module acceptance ledger added (backend rows blocked).
 
 ## In progress
 
