@@ -17,3 +17,5 @@
   `src/lib/format.test.js` (4 passing). A failing test caught a `makeDocId` signature bug, now fixed.
 - P1: added Zod canonical schemas for 19 entities across `src/schemas/atelier.js` and
   `src/schemas/erpnext.js`, with contract tests validating every seed record (23 tests passing).
+- P4: code-split `App.jsx` — 16 views and 14 modals now `React.lazy` + `Suspense`.
+  Main bundle 570 kB → 304 kB; the >500 kB build warning is resolved.

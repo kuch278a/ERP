@@ -1,42 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 
-// Core Atelier Views
-import DashboardView from './views/DashboardView';
-import ProjectsView from './views/ProjectsView';
-import FfeScheduleView from './views/FfeScheduleView';
-import SiteSnagsView from './views/SiteSnagsView';
-import ClientsView from './views/ClientsView';
-import MoodboardsView from './views/MoodboardsView';
-import MaterialsView from './views/MaterialsView';
-import TeamView from './views/TeamView';
+// Core Atelier Views (lazy-loaded for code-splitting — docs/PLAN.md §L4)
+const DashboardView = lazy(() => import('./views/DashboardView'));
+const ProjectsView = lazy(() => import('./views/ProjectsView'));
+const FfeScheduleView = lazy(() => import('./views/FfeScheduleView'));
+const SiteSnagsView = lazy(() => import('./views/SiteSnagsView'));
+const ClientsView = lazy(() => import('./views/ClientsView'));
+const MoodboardsView = lazy(() => import('./views/MoodboardsView'));
+const MaterialsView = lazy(() => import('./views/MaterialsView'));
+const TeamView = lazy(() => import('./views/TeamView'));
 
 // ERPNext Core Ported Modules Views
-import FinancialsView from './views/FinancialsView';
-import BuyingView from './views/BuyingView';
-import StockView from './views/StockView';
-import ManufacturingView from './views/ManufacturingView';
-import AssetsView from './views/AssetsView';
-import CrmPipelineView from './views/CrmPipelineView';
-import SupportMaintenanceView from './views/SupportMaintenanceView';
-import ErpnextDeskView from './views/ErpnextDeskView';
+const FinancialsView = lazy(() => import('./views/FinancialsView'));
+const BuyingView = lazy(() => import('./views/BuyingView'));
+const StockView = lazy(() => import('./views/StockView'));
+const ManufacturingView = lazy(() => import('./views/ManufacturingView'));
+const AssetsView = lazy(() => import('./views/AssetsView'));
+const CrmPipelineView = lazy(() => import('./views/CrmPipelineView'));
+const SupportMaintenanceView = lazy(() => import('./views/SupportMaintenanceView'));
+const ErpnextDeskView = lazy(() => import('./views/ErpnextDeskView'));
 
 // Modals
-import ProjectDetailModal from './components/ProjectDetailModal';
-import NewProjectModal from './components/NewProjectModal';
-import NewFfeModal from './components/NewFfeModal';
-import NewSnagModal from './components/NewSnagModal';
-import NewInvoiceModal from './components/NewInvoiceModal';
-import PrintableInvoiceModal from './components/PrintableInvoiceModal';
-import NewPurchaseOrderModal from './components/NewPurchaseOrderModal';
-import NewStockEntryModal from './components/NewStockEntryModal';
-import NewJournalEntryModal from './components/NewJournalEntryModal';
-import DocTypeInspectorModal from './components/DocTypeInspectorModal';
-import NewWorkOrderModal from './components/NewWorkOrderModal';
-import NewAssetModal from './components/NewAssetModal';
-import NewOpportunityModal from './components/NewOpportunityModal';
-import NewSupportIssueModal from './components/NewSupportIssueModal';
+const ProjectDetailModal = lazy(() => import('./components/ProjectDetailModal'));
+const NewProjectModal = lazy(() => import('./components/NewProjectModal'));
+const NewFfeModal = lazy(() => import('./components/NewFfeModal'));
+const NewSnagModal = lazy(() => import('./components/NewSnagModal'));
+const NewInvoiceModal = lazy(() => import('./components/NewInvoiceModal'));
+const PrintableInvoiceModal = lazy(() => import('./components/PrintableInvoiceModal'));
+const NewPurchaseOrderModal = lazy(() => import('./components/NewPurchaseOrderModal'));
+const NewStockEntryModal = lazy(() => import('./components/NewStockEntryModal'));
+const NewJournalEntryModal = lazy(() => import('./components/NewJournalEntryModal'));
+const DocTypeInspectorModal = lazy(() => import('./components/DocTypeInspectorModal'));
+const NewWorkOrderModal = lazy(() => import('./components/NewWorkOrderModal'));
+const NewAssetModal = lazy(() => import('./components/NewAssetModal'));
+const NewOpportunityModal = lazy(() => import('./components/NewOpportunityModal'));
+const NewSupportIssueModal = lazy(() => import('./components/NewSupportIssueModal'));
 
 // Mock Data
 import { 
@@ -552,6 +552,7 @@ export default function App() {
         />
 
         {/* View Routing */}
+        <Suspense fallback={<div style={{ padding: '40px', color: 'var(--text-muted)' }}>Loading…</div>}>
         {currentView === 'dashboard' && (
           <DashboardView
             projects={projects}
@@ -705,9 +706,11 @@ export default function App() {
         {currentView === 'team' && (
           <TeamView />
         )}
+        </Suspense>
       </div>
 
       {/* Modals */}
+      <Suspense fallback={null}>
       {inspectingProject && (
         <ProjectDetailModal
           project={inspectingProject}
@@ -827,6 +830,7 @@ export default function App() {
           onClose={() => setPrintingInvoice(null)}
         />
       )}
+      </Suspense>
     </div>
   );
 }
