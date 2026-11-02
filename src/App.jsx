@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import { useLocalStorageState } from './hooks/useLocalStorageState';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ViewRouter from './components/ViewRouter';
 import ModalRouter from './components/ModalRouter';
+import { useEstate } from './hooks/useEstate';
 
 // URL-addressable views (deep links — docs/PLAN.md §L4 routing)
 const KNOWN_VIEWS = new Set([
@@ -12,38 +12,6 @@ const KNOWN_VIEWS = new Set([
   'manufacturing', 'assets', 'crm', 'support', 'erpnext_desk', 'clients',
   'moodboards', 'materials', 'team',
 ]);
-
-// Views are rendered by <ViewRouter /> (lazy-loaded there).
-
-// Modals are rendered by <ModalRouter /> (lazy-loaded there).
-
-// Mock Data
-import { 
-  INITIAL_PROJECTS, 
-  INITIAL_FFE_ITEMS, 
-  INITIAL_SNAGS, 
-  INITIAL_INVOICES, 
-  INITIAL_CLIENTS 
-} from './data/mockData';
-
-// ERPNext Schemas & Ported Master Datasets
-import {
-  INITIAL_PURCHASE_ORDERS,
-  INITIAL_SUPPLIERS,
-  INITIAL_STOCK_ITEMS,
-  INITIAL_WAREHOUSES,
-  INITIAL_STOCK_ENTRIES,
-  INITIAL_STOCK_LEDGER_ENTRIES,
-  INITIAL_CHART_OF_ACCOUNTS,
-  INITIAL_GL_ENTRIES,
-  INITIAL_JOURNAL_ENTRIES,
-  INITIAL_BOMS,
-  INITIAL_WORK_ORDERS,
-  INITIAL_ASSETS,
-  INITIAL_OPPORTUNITIES,
-  INITIAL_SUPPORT_ISSUES,
-  INITIAL_SUBCONTRACT_ORDERS
-} from './data/erpnextSchemas';
 
 export default function App() {
   // Theme state
@@ -56,29 +24,31 @@ export default function App() {
   const setCurrentView = (view) => navigate(`/${view}`);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Domain state — persisted via the shared hook (docs/PLAN.md §L4)
-  const [projects, setProjects] = useLocalStorageState('ashara_projects', INITIAL_PROJECTS);
-  const [ffeItems, setFfeItems] = useLocalStorageState('ashara_ffe', INITIAL_FFE_ITEMS);
-  const [snags, setSnags] = useLocalStorageState('ashara_snags', INITIAL_SNAGS);
-  const [invoices, setInvoices] = useLocalStorageState('ashara_invoices', INITIAL_INVOICES);
-  const [clients] = useLocalStorageState('ashara_clients', INITIAL_CLIENTS);
-
-  const [purchaseOrders, setPurchaseOrders] = useLocalStorageState('ashara_purchase_orders', INITIAL_PURCHASE_ORDERS);
-  const [suppliers] = useLocalStorageState('ashara_suppliers', INITIAL_SUPPLIERS);
-  const [stockItems, setStockItems] = useLocalStorageState('ashara_stock_items', INITIAL_STOCK_ITEMS);
-  const [warehouses] = useState(INITIAL_WAREHOUSES);
-  const [stockEntries, setStockEntries] = useLocalStorageState('ashara_stock_entries', INITIAL_STOCK_ENTRIES);
-  const [stockLedgerEntries] = useLocalStorageState('ashara_stock_ledger', INITIAL_STOCK_LEDGER_ENTRIES);
-  const [chartOfAccounts] = useState(INITIAL_CHART_OF_ACCOUNTS);
-  const [glEntries, setGlEntries] = useLocalStorageState('ashara_gl_entries', INITIAL_GL_ENTRIES);
-  const [journalEntries, setJournalEntries] = useLocalStorageState('ashara_journal_entries', INITIAL_JOURNAL_ENTRIES);
-
-  const [boms] = useLocalStorageState('ashara_boms', INITIAL_BOMS);
-  const [workOrders, setWorkOrders] = useLocalStorageState('ashara_work_orders', INITIAL_WORK_ORDERS);
-  const [assets, setAssets] = useLocalStorageState('ashara_assets', INITIAL_ASSETS);
-  const [opportunities, setOpportunities] = useLocalStorageState('ashara_opportunities', INITIAL_OPPORTUNITIES);
-  const [issues, setIssues] = useLocalStorageState('ashara_support_issues', INITIAL_SUPPORT_ISSUES);
-  const [subcontractOrders] = useState(INITIAL_SUBCONTRACT_ORDERS);
+  // Domain state + handlers (docs/PLAN.md §L4 decomposition)
+  const estate = useEstate();
+  const {
+    projects,
+    ffeItems,
+    snags,
+    invoices,
+    clients,
+    purchaseOrders,
+    suppliers,
+    stockItems,
+    warehouses,
+    stockEntries,
+    stockLedgerEntries,
+    chartOfAccounts,
+    glEntries,
+    journalEntries,
+    boms,
+    workOrders,
+    assets,
+    opportunities,
+    issues,
+    subcontractOrders,
+  } = estate.values;
+  const { handlers } = estate;
 
   // Modal State
   const [inspectingProject, setInspectingProject] = useState(null);
@@ -110,244 +80,10 @@ export default function App() {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // Handlers for Projects
-  const handleCreateProject = (newProject) => {
-    setProjects(prev => [newProject, ...prev]);
-  };
-
+  // Project update also refreshes the open detail modal.
   const handleUpdateProject = (updatedProject) => {
-    setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
+    estate.setters.setProjects((prev) => prev.map((p) => (p.id === updatedProject.id ? updatedProject : p)));
     setInspectingProject(updatedProject);
-  };
-
-  // Handlers for FF&E
-  const handleCreateFfe = (newItem) => {
-    setFfeItems(prev => [newItem, ...prev]);
-  };
-
-  const handleToggleSample = (id) => {
-    setFfeItems(prev => prev.map(item => 
-      item.id === id ? { ...item, sampleApproved: !item.sampleApproved } : item
-    ));
-  };
-
-  const handleUpdateFfeStatus = (id, newStatus) => {
-    setFfeItems(prev => prev.map(item => 
-      item.id === id ? { ...item, poStatus: newStatus } : item
-    ));
-  };
-
-  // Handlers for Snags
-  const handleCreateSnag = (newSnag) => {
-    setSnags(prev => [newSnag, ...prev]);
-  };
-
-  const handleUpdateSnagStatus = (id, newStatus) => {
-    setSnags(prev => prev.map(snag => 
-      snag.id === id ? { ...snag, status: newStatus } : snag
-    ));
-  };
-
-  // Handlers for Invoices
-  const handleCreateInvoice = (newInv) => {
-    setInvoices(prev => [newInv, ...prev]);
-
-    // Automatically post ERPNext General Ledger Entries
-    const newGleDr = {
-      id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}`,
-      posting_date: newInv.issueDate,
-      voucher_type: "Sales Invoice",
-      voucher_no: newInv.id,
-      account: "1120 - Accounts Receivable (Debtors)",
-      party_type: "Customer",
-      party: newInv.clientName,
-      project: newInv.projectId,
-      debit: newInv.totalWithTax || newInv.amount * 1.05,
-      credit: 0,
-      remarks: `Sales Invoice billing: ${newInv.milestone}`
-    };
-
-    const newGleCr = {
-      id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}`,
-      posting_date: newInv.issueDate,
-      voucher_type: "Sales Invoice",
-      voucher_no: newInv.id,
-      account: "4110 - Architectural & BIM Design Fees",
-      party_type: "Customer",
-      party: newInv.clientName,
-      project: newInv.projectId,
-      debit: 0,
-      credit: newInv.amount,
-      remarks: `Revenue recognition: ${newInv.milestone}`
-    };
-
-    setGlEntries(prev => [newGleDr, newGleCr, ...prev]);
-  };
-
-  const handleToggleInvoicePaid = (id) => {
-    setInvoices(prev => prev.map(inv => {
-      if (inv.id === id) {
-        const nextStatus = inv.status === 'Paid' ? 'Pending' : 'Paid';
-        
-        if (nextStatus === 'Paid') {
-          const payGleDr = {
-            id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}`,
-            posting_date: new Date().toISOString().split('T')[0],
-            voucher_type: "Payment Entry",
-            voucher_no: `PAY-${inv.id}`,
-            account: "1110 - Cash and Bank Balances (Emirates NBD)",
-            party_type: "Customer",
-            party: inv.clientName,
-            project: inv.projectId,
-            debit: inv.totalWithTax || inv.amount * 1.05,
-            credit: 0,
-            remarks: `Payment settlement received for ${inv.id}`
-          };
-          const payGleCr = {
-            id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}`,
-            posting_date: new Date().toISOString().split('T')[0],
-            voucher_type: "Payment Entry",
-            voucher_no: `PAY-${inv.id}`,
-            account: "1120 - Accounts Receivable (Debtors)",
-            party_type: "Customer",
-            party: inv.clientName,
-            project: inv.projectId,
-            debit: 0,
-            credit: inv.totalWithTax || inv.amount * 1.05,
-            remarks: `Accounts receivable cleared for ${inv.id}`
-          };
-          setGlEntries(gPrev => [payGleDr, payGleCr, ...gPrev]);
-        }
-
-        return { ...inv, status: nextStatus };
-      }
-      return inv;
-    }));
-  };
-
-  // Handlers for Buying
-  const handleCreatePO = (newPO) => {
-    setPurchaseOrders(prev => [newPO, ...prev]);
-  };
-
-  const handleUpdatePOStatus = (poId, nextStatus) => {
-    setPurchaseOrders(prev => prev.map(po => {
-      if (po.id === poId) {
-        return { ...po, status: nextStatus };
-      }
-      return po;
-    }));
-  };
-
-  // Handlers for Stock
-  const handleCreateStockEntry = (newEntry) => {
-    setStockEntries(prev => [newEntry, ...prev]);
-
-    setStockItems(prev => prev.map(item => {
-      const movedItem = newEntry.items.find(i => i.item_code === item.item_code);
-      if (movedItem) {
-        if (newEntry.purpose === 'Material Transfer') {
-          return {
-            ...item,
-            qty_reserved: item.qty_reserved + movedItem.qty
-          };
-        } else if (newEntry.purpose === 'Material Issue') {
-          return {
-            ...item,
-            qty_on_hand: Math.max(0, item.qty_on_hand - movedItem.qty)
-          };
-        } else if (newEntry.purpose === 'Material Receipt') {
-          return {
-            ...item,
-            qty_on_hand: item.qty_on_hand + movedItem.qty
-          };
-        }
-      }
-      return item;
-    }));
-
-    const stockGle = {
-      id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}`,
-      posting_date: newEntry.posting_date,
-      voucher_type: "Stock Entry",
-      voucher_no: newEntry.id,
-      account: "1140 - Project Work In Progress (WIP Fit-out)",
-      party_type: "Project",
-      party: newEntry.projectName,
-      project: newEntry.project,
-      debit: newEntry.total_outgoing_value,
-      credit: 0,
-      remarks: `Stock movement (${newEntry.purpose}) to site staging`
-    };
-    setGlEntries(prev => [stockGle, ...prev]);
-  };
-
-  // Handlers for Accounts (Journal Entry)
-  const handleCreateJournalEntry = (newJV) => {
-    setJournalEntries(prev => [newJV, ...prev]);
-
-    const newGleRows = newJV.accounts.map((accRow, idx) => ({
-      id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}-${idx}`,
-      posting_date: newJV.posting_date,
-      voucher_type: newJV.voucher_type,
-      voucher_no: newJV.id,
-      account: accRow.account,
-      party_type: accRow.party_type,
-      party: accRow.party,
-      project: "",
-      debit: accRow.debit,
-      credit: accRow.credit,
-      remarks: newJV.user_remark
-    }));
-
-    setGlEntries(prev => [...newGleRows, ...prev]);
-  };
-
-  // Handlers for Manufacturing (Work Orders)
-  const handleCreateWorkOrder = (newWO) => {
-    setWorkOrders(prev => [newWO, ...prev]);
-  };
-
-  const handleUpdateWorkOrderStatus = (woId, nextStatus) => {
-    setWorkOrders(prev => prev.map(wo => {
-      if (wo.id === woId) {
-        return { ...wo, status: nextStatus, progress: nextStatus === 'Completed' ? 100 : wo.progress };
-      }
-      return wo;
-    }));
-  };
-
-  // Handlers for Fixed Assets
-  const handleCreateAsset = (newAsset) => {
-    setAssets(prev => [newAsset, ...prev]);
-  };
-
-  // Handlers for CRM Opportunities
-  const handleCreateOpportunity = (newOpp) => {
-    setOpportunities(prev => [newOpp, ...prev]);
-  };
-
-  const handleUpdateOpportunityStage = (oppId, nextStage) => {
-    setOpportunities(prev => prev.map(opp => {
-      if (opp.id === oppId) {
-        return { ...opp, stage: nextStage };
-      }
-      return opp;
-    }));
-  };
-
-  // Handlers for Support Tickets
-  const handleCreateIssue = (newIssue) => {
-    setIssues(prev => [newIssue, ...prev]);
-  };
-
-  const handleUpdateIssueStatus = (issueId, nextStatus) => {
-    setIssues(prev => prev.map(issue => {
-      if (issue.id === issueId) {
-        return { ...issue, status: nextStatus };
-      }
-      return issue;
-    }));
   };
 
   // Close the top-most open overlay on Escape (docs/PLAN.md §L4 a11y)
@@ -436,15 +172,15 @@ export default function App() {
           }}
           handlers={{
             onSelectProject: (p) => setInspectingProject(p),
-            onToggleSample: handleToggleSample,
-            onUpdateFfeStatus: handleUpdateFfeStatus,
-            onUpdateSnagStatus: handleUpdateSnagStatus,
-            onToggleInvoicePaid: handleToggleInvoicePaid,
+            onToggleSample: handlers.handleToggleSample,
+            onUpdateFfeStatus: handlers.handleUpdateFfeStatus,
+            onUpdateSnagStatus: handlers.handleUpdateSnagStatus,
+            onToggleInvoicePaid: handlers.handleToggleInvoicePaid,
             onOpenPrintInvoice: (inv) => setPrintingInvoice(inv),
-            onUpdatePOStatus: handleUpdatePOStatus,
-            onUpdateWorkOrderStatus: handleUpdateWorkOrderStatus,
-            onUpdateOpportunityStage: handleUpdateOpportunityStage,
-            onUpdateIssueStatus: handleUpdateIssueStatus,
+            onUpdatePOStatus: handlers.handleUpdatePOStatus,
+            onUpdateWorkOrderStatus: handlers.handleUpdateWorkOrderStatus,
+            onUpdateOpportunityStage: handlers.handleUpdateOpportunityStage,
+            onUpdateIssueStatus: handlers.handleUpdateIssueStatus,
             onOpenDocTypeInspector: (dt) => setInspectingDocType(dt || 'sales_invoice'),
             onOpenNewClient: () =>
               setNotifications((prev) => [
@@ -471,17 +207,17 @@ export default function App() {
           closePrint: () => setPrintingInvoice(null),
           onUpdateProject: handleUpdateProject,
           create: {
-            project: handleCreateProject,
-            ffe: handleCreateFfe,
-            snag: handleCreateSnag,
-            invoice: handleCreateInvoice,
-            po: handleCreatePO,
-            stockEntry: handleCreateStockEntry,
-            journalEntry: handleCreateJournalEntry,
-            workOrder: handleCreateWorkOrder,
-            asset: handleCreateAsset,
-            opportunity: handleCreateOpportunity,
-            issue: handleCreateIssue,
+            project: handlers.handleCreateProject,
+            ffe: handlers.handleCreateFfe,
+            snag: handlers.handleCreateSnag,
+            invoice: handlers.handleCreateInvoice,
+            po: handlers.handleCreatePO,
+            stockEntry: handlers.handleCreateStockEntry,
+            journalEntry: handlers.handleCreateJournalEntry,
+            workOrder: handlers.handleCreateWorkOrder,
+            asset: handlers.handleCreateAsset,
+            opportunity: handlers.handleCreateOpportunity,
+            issue: handlers.handleCreateIssue,
           },
         }}
       />

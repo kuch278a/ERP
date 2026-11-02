@@ -30,6 +30,7 @@
 - [x] P6/L6: `docs/SECURITY.md` (secrets, CSP, dependency policy) + `npm audit --audit-level=high` in CI (0 vulnerabilities).
 - [x] P4 decompose: extracted `ViewRouter.jsx` (lazy view switch); `App.jsx` 732 → 600 lines.
 - [x] P4 decompose: extracted `ModalRouter.jsx` (lazy modal cluster); `App.jsx` 600 → 490 lines.
+- [x] P4 decompose: extracted `useEstate` hook (domain state + handlers); `App.jsx` 490 → 226 lines.
 
 ## In progress
 

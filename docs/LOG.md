@@ -53,3 +53,5 @@
   `App.jsx` 732 → 600 lines. lint + build + 53 tests green.
 - L4 decompose: extracted `src/components/ModalRouter.jsx` (lazy modal cluster);
   `App.jsx` 600 → 490 lines.
+- L4 decompose: extracted `src/hooks/useEstate.js` (all domain state + handlers);
+  `App.jsx` 490 → 226 lines. lint + build + 53 tests green.
