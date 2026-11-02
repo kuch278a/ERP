@@ -13,6 +13,7 @@ export default function NewJournalEntryModal({ onClose, onSubmit, accountsList: 
   ];
 
   const [entries, setEntries] = useState(defaultAccounts);
+  const [formError, setFormError] = useState('');
 
   const flatAccounts = [
     '1110 - Cash and Bank Balances (Emirates NBD)',
@@ -59,13 +60,14 @@ export default function NewJournalEntryModal({ onClose, onSubmit, accountsList: 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isBalanced) {
-      alert('Debit and Credit must be equal before submitting Journal Entry.');
+      setFormError('Debit and Credit must be equal before submitting the journal entry.');
       return;
     }
-    if (!userRemark) {
-      alert('Please provide a remark describing this accounting transaction.');
+    if (!userRemark.trim()) {
+      setFormError('Add a remark describing this accounting transaction.');
       return;
     }
+    setFormError('');
 
     const seq = Date.now().toString().slice(-4);
     const newJV = {
@@ -297,6 +299,23 @@ export default function NewJournalEntryModal({ onClose, onSubmit, accountsList: 
               </div>
             </div>
           </div>
+
+          {formError && (
+            <div
+              role="alert"
+              style={{
+                margin: '0 24px 12px',
+                padding: '10px 14px',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(200,70,48,0.1)',
+                border: '1px solid var(--status-danger)',
+                color: 'var(--status-danger)',
+                fontSize: '12.5px'
+              }}
+            >
+              {formError}
+            </div>
+          )}
 
           <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
             <button type="button" className="btn-secondary" onClick={onClose}>

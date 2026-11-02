@@ -20,6 +20,7 @@
 - [x] P5 start: Vitest installed, `npm run test` wired, `src/lib/format.test.js` (4 passing), test in CI.
 - [x] P1: canonical Zod schemas (`src/schemas/atelier.js`, `erpnext.js`) + contract tests (23 passing).
 - [x] P4 start: `App.jsx` views/modals code-split via `React.lazy` + `Suspense` (main chunk 570 kB → 304 kB).
+- [x] P4: removed all `alert()` calls (inline `role="alert"` errors in journal/stock modals; non-blocking notification for the client stub).
 
 ## In progress
 

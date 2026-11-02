@@ -15,6 +15,7 @@ export default function NewStockEntryModal({ onClose, onSubmit, stockItems, ware
       valuation_rate: stockItems[0]?.valuation_rate || 266.67
     }
   ]);
+  const [formError, setFormError] = useState('');
 
   const handleAddItem = () => {
     const defaultItem = stockItems[0] || {};
@@ -61,9 +62,10 @@ export default function NewStockEntryModal({ onClose, onSubmit, stockItems, ware
   const handleSubmit = (e) => {
     e.preventDefault();
     if (purpose === 'Material Transfer' && fromWarehouse === toWarehouse) {
-      alert('Source warehouse and target warehouse cannot be the same for a transfer.');
+      setFormError('Source and target warehouse cannot be the same for a transfer.');
       return;
     }
+    setFormError('');
 
     const seq = Date.now().toString().slice(-4);
     const newStockEntry = {
@@ -269,6 +271,23 @@ export default function NewStockEntryModal({ onClose, onSubmit, stockItems, ware
               </div>
             </div>
           </div>
+
+          {formError && (
+            <div
+              role="alert"
+              style={{
+                margin: '0 24px 12px',
+                padding: '10px 14px',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(200,70,48,0.1)',
+                border: '1px solid var(--status-danger)',
+                color: 'var(--status-danger)',
+                fontSize: '12.5px'
+              }}
+            >
+              {formError}
+            </div>
+          )}
 
           <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
             <button type="button" className="btn-secondary" onClick={onClose}>

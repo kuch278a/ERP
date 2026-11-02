@@ -19,3 +19,5 @@
   `src/schemas/erpnext.js`, with contract tests validating every seed record (23 tests passing).
 - P4: code-split `App.jsx` — 16 views and 14 modals now `React.lazy` + `Suspense`.
   Main bundle 570 kB → 304 kB; the >500 kB build warning is resolved.
+- P4: replaced all `alert()` validation with inline `role="alert"` errors in the journal and
+  stock modals, and a non-blocking notification for the clients stub. No `alert()` remains.

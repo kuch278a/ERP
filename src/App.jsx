@@ -691,7 +691,17 @@ export default function App() {
           <ClientsView
             clients={clients}
             projects={projects}
-            onOpenNewClient={() => alert('New client onboarding form: enter client credentials in system.')}
+            onOpenNewClient={() =>
+              setNotifications((prev) => [
+                {
+                  id: Date.now(),
+                  title: 'Client onboarding',
+                  message: 'The new-client form is not yet available.',
+                  type: 'info',
+                },
+                ...prev,
+              ])
+            }
           />
         )}
 
