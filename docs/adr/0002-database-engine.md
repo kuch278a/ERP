@@ -19,6 +19,15 @@ valuation, which need exact decimals and concurrent-safe writes.
 - Exact decimal arithmetic; `SELECT … FOR UPDATE` for ledger postings; JSONB
   (notifications are already JSON); partial/covering indexes.
 
+## Confirmation
+
+- AureusERP ships a database-dialect layer (`plugins/webkul/support/src/Database/Dialects`,
+  `db_dialect()`) supporting **`mysql`, `mariadb`, and `pgsql`**; migrations use portable DDL
+  and `jsonb` on Postgres (e.g. the translatable `blogs` migrations). Postgres is a
+  first-class driver, not a workaround.
+- Backend `config/database.php` now defaults to `pgsql` and `.env.example` ships Postgres
+  settings (`DB_CONNECTION=pgsql`, port `5432`).
+
 ## Consequences
 
 - Create `.env.example`; provision a real DB per environment.

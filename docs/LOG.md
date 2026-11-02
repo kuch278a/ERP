@@ -24,3 +24,6 @@
 - P4: added `src/hooks/useLocalStorageState.js` and replaced the 14 inline
   `useState` + persistence `useEffect` blocks in `App.jsx`; added global Escape-to-close
   for modals (a11y). Lint + build + 23 tests green.
+- Database: confirmed AureusERP's pgsql dialect support; switched backend
+  `config/database.php` default to `pgsql` and added backend `.env.example` +
+  `docker-compose.yml` (Postgres 16). ADR 0002 updated with the confirmation.

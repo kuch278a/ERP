@@ -36,4 +36,9 @@
 ## Blockers
 
 - Backend tree incomplete (missing root `composer.json`/`package.json`; `.git` has no HEAD).
-- No `.env`/`.env.example` in backend → no configured database.
+
+## Database
+
+- Engine: **PostgreSQL 16** (ADR 0002). Backend `config/database.php` defaults to `pgsql`;
+  backend `.env.example` and `docker-compose.yml` (Postgres 16) added.
+- AureusERP supports `mysql` / `mariadb` / `pgsql` via its dialect layer.
