@@ -49,3 +49,5 @@
   (ProjectDetailModal, DocTypeInspectorModal, PrintableInvoiceModal).
 - L6: added `docs/SECURITY.md` (secret handling, recommended CSP, dependency policy) and
   `npm audit --audit-level=high` to CI. Audit: 0 vulnerabilities.
+- L4 decompose: extracted `src/components/ViewRouter.jsx` (lazy view switch + prop bundle);
+  `App.jsx` 732 → 600 lines. lint + build + 53 tests green.

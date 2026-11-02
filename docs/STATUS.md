@@ -28,6 +28,7 @@
 - [x] P5: coverage gate (`@vitest/coverage-v8`) wired in `vitest.config.js` with a floor (58/32/48/60) and `npm run test:coverage` in CI. Tests for hook, API client, ErrorBoundary added.
 - [x] P4 a11y: all modals (incl. read-only `ProjectDetailModal`, `DocTypeInspectorModal`, `PrintableInvoiceModal`) now expose `role="dialog"`/`aria-modal` + focus trap.
 - [x] P6/L6: `docs/SECURITY.md` (secrets, CSP, dependency policy) + `npm audit --audit-level=high` in CI (0 vulnerabilities).
+- [x] P4 decompose: extracted `ViewRouter.jsx` (lazy view switch); `App.jsx` 732 → 600 lines.
 
 ## In progress
 

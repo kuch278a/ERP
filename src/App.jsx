@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ViewRouter from './components/ViewRouter';
 
 // URL-addressable views (deep links — docs/PLAN.md §L4 routing)
 const KNOWN_VIEWS = new Set([
@@ -11,25 +12,7 @@ const KNOWN_VIEWS = new Set([
   'moodboards', 'materials', 'team',
 ]);
 
-// Core Atelier Views (lazy-loaded for code-splitting — docs/PLAN.md §L4)
-const DashboardView = lazy(() => import('./views/DashboardView'));
-const ProjectsView = lazy(() => import('./views/ProjectsView'));
-const FfeScheduleView = lazy(() => import('./views/FfeScheduleView'));
-const SiteSnagsView = lazy(() => import('./views/SiteSnagsView'));
-const ClientsView = lazy(() => import('./views/ClientsView'));
-const MoodboardsView = lazy(() => import('./views/MoodboardsView'));
-const MaterialsView = lazy(() => import('./views/MaterialsView'));
-const TeamView = lazy(() => import('./views/TeamView'));
-
-// ERPNext Core Ported Modules Views
-const FinancialsView = lazy(() => import('./views/FinancialsView'));
-const BuyingView = lazy(() => import('./views/BuyingView'));
-const StockView = lazy(() => import('./views/StockView'));
-const ManufacturingView = lazy(() => import('./views/ManufacturingView'));
-const AssetsView = lazy(() => import('./views/AssetsView'));
-const CrmPipelineView = lazy(() => import('./views/CrmPipelineView'));
-const SupportMaintenanceView = lazy(() => import('./views/SupportMaintenanceView'));
-const ErpnextDeskView = lazy(() => import('./views/ErpnextDeskView'));
+// Views are rendered by <ViewRouter /> (lazy-loaded there).
 
 // Modals
 const ProjectDetailModal = lazy(() => import('./components/ProjectDetailModal'));
@@ -438,146 +421,45 @@ export default function App() {
         />
 
         {/* View Routing */}
-        <Suspense fallback={<div style={{ padding: '40px', color: 'var(--text-muted)' }}>Loading…</div>}>
-        {currentView === 'dashboard' && (
-          <DashboardView
-            projects={projects}
-            ffeItems={ffeItems}
-            snags={snags}
-            invoices={invoices}
-            onSelectProject={(p) => setInspectingProject(p)}
-            setCurrentView={setCurrentView}
-            onOpenNewProject={() => setActiveModal('newProject')}
-          />
-        )}
-
-        {currentView === 'projects' && (
-          <ProjectsView
-            projects={projects}
-            ffeItems={ffeItems}
-            snags={snags}
-            invoices={invoices}
-            onSelectProject={(p) => setInspectingProject(p)}
-            onOpenNewProject={() => setActiveModal('newProject')}
-          />
-        )}
-
-        {currentView === 'ffe' && (
-          <FfeScheduleView
-            ffeItems={ffeItems}
-            onToggleSample={handleToggleSample}
-            onUpdateStatus={handleUpdateFfeStatus}
-            onOpenNewFfe={() => setActiveModal('newFfe')}
-            projects={projects}
-          />
-        )}
-
-        {currentView === 'snags' && (
-          <SiteSnagsView
-            snags={snags}
-            onUpdateSnagStatus={handleUpdateSnagStatus}
-            onOpenNewSnag={() => setActiveModal('newSnag')}
-            projects={projects}
-          />
-        )}
-
-        {currentView === 'financials' && (
-          <FinancialsView
-            invoices={invoices}
-            onTogglePaid={handleToggleInvoicePaid}
-            onOpenNewInvoice={() => setActiveModal('newInvoice')}
-            onOpenPrintInvoice={(inv) => setPrintingInvoice(inv)}
-            projects={projects}
-            glEntries={glEntries}
-            journalEntries={journalEntries}
-            chartOfAccounts={chartOfAccounts}
-            onOpenNewJournalEntry={() => setActiveModal('newJournalEntry')}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'sales_invoice')}
-          />
-        )}
-
-        {currentView === 'buying' && (
-          <BuyingView
-            purchaseOrders={purchaseOrders}
-            suppliers={suppliers}
-            onOpenNewPO={() => setActiveModal('newPO')}
-            onUpdatePOStatus={handleUpdatePOStatus}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'purchase_order')}
-          />
-        )}
-
-        {currentView === 'stock' && (
-          <StockView
-            stockItems={stockItems}
-            warehouses={warehouses}
-            stockEntries={stockEntries}
-            stockLedgerEntries={stockLedgerEntries}
-            onOpenNewStockEntry={() => setActiveModal('newStockEntry')}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'item')}
-          />
-        )}
-
-        {currentView === 'manufacturing' && (
-          <ManufacturingView
-            workOrders={workOrders}
-            boms={boms}
-            onOpenNewWorkOrder={() => setActiveModal('newWorkOrder')}
-            onUpdateWorkOrderStatus={handleUpdateWorkOrderStatus}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'bom')}
-          />
-        )}
-
-        {currentView === 'assets' && (
-          <AssetsView
-            assets={assets}
-            onOpenNewAsset={() => setActiveModal('newAsset')}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'asset')}
-          />
-        )}
-
-        {currentView === 'crm' && (
-          <CrmPipelineView
-            opportunities={opportunities}
-            onOpenNewOpportunity={() => setActiveModal('newOpportunity')}
-            onUpdateOpportunityStage={handleUpdateOpportunityStage}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'opportunity')}
-          />
-        )}
-
-        {currentView === 'support' && (
-          <SupportMaintenanceView
-            issues={issues}
-            subcontractOrders={subcontractOrders}
-            onOpenNewIssue={() => setActiveModal('newIssue')}
-            onUpdateIssueStatus={handleUpdateIssueStatus}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'issue')}
-          />
-        )}
-
-        {currentView === 'erpnext_desk' && (
-          <ErpnextDeskView
-            counts={{
-              projects: projects.length,
-              ffe: ffeItems.length,
-              snags: snags.length,
-              invoices: invoices.length,
-              buying: purchaseOrders.length,
-              stock: stockItems.length,
-              manufacturing: workOrders.length,
-              assets: assets.length,
-              opportunities: opportunities.length,
-              issues: issues.length
-            }}
-            setCurrentView={setCurrentView}
-            onOpenDocTypeInspector={(dt) => setInspectingDocType(dt || 'sales_invoice')}
-          />
-        )}
-
-        {currentView === 'clients' && (
-          <ClientsView
-            clients={clients}
-            projects={projects}
-            onOpenNewClient={() =>
+        <ViewRouter
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          openModal={setActiveModal}
+          data={{
+            projects,
+            ffeItems,
+            snags,
+            invoices,
+            purchaseOrders,
+            suppliers,
+            stockItems,
+            warehouses,
+            stockEntries,
+            stockLedgerEntries,
+            workOrders,
+            boms,
+            assets,
+            opportunities,
+            issues,
+            subcontractOrders,
+            clients,
+            glEntries,
+            journalEntries,
+            chartOfAccounts,
+          }}
+          handlers={{
+            onSelectProject: (p) => setInspectingProject(p),
+            onToggleSample: handleToggleSample,
+            onUpdateFfeStatus: handleUpdateFfeStatus,
+            onUpdateSnagStatus: handleUpdateSnagStatus,
+            onToggleInvoicePaid: handleToggleInvoicePaid,
+            onOpenPrintInvoice: (inv) => setPrintingInvoice(inv),
+            onUpdatePOStatus: handleUpdatePOStatus,
+            onUpdateWorkOrderStatus: handleUpdateWorkOrderStatus,
+            onUpdateOpportunityStage: handleUpdateOpportunityStage,
+            onUpdateIssueStatus: handleUpdateIssueStatus,
+            onOpenDocTypeInspector: (dt) => setInspectingDocType(dt || 'sales_invoice'),
+            onOpenNewClient: () =>
               setNotifications((prev) => [
                 {
                   id: Date.now(),
@@ -586,23 +468,9 @@ export default function App() {
                   type: 'info',
                 },
                 ...prev,
-              ])
-            }
-          />
-        )}
-
-        {currentView === 'moodboards' && (
-          <MoodboardsView />
-        )}
-
-        {currentView === 'materials' && (
-          <MaterialsView />
-        )}
-
-        {currentView === 'team' && (
-          <TeamView />
-        )}
-        </Suspense>
+              ]),
+          }}
+        />
       </div>
 
       {/* Modals */}
