@@ -36,3 +36,4 @@
 - L5: added `REGRESSION.md` (module → acceptance-command ledger; backend rows blocked).
 - L4: migrated NewOpportunityModal, NewWorkOrderModal, NewSupportIssueModal to the shared
   accessible `Modal` + react-hook-form + Zod, with component tests. 32 tests passing.
+- L4: migrated NewSnagModal and NewInvoiceModal (VAT via `VAT_RATE`). 35 tests passing.
