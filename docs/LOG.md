@@ -76,3 +76,7 @@
 - L2: restored backend `package.json` from `node_modules` (86 devDependencies, script
   `Ashara-ERP/scripts/rebuild-package.cjs`). Vite/Tailwind configs still missing
   (prebuilt `public/build` assets present).
+- L3: promoted the atelier `routes/api.php` closures to `App\Http\Controllers\Api\V1\*` controllers
+  (Health/Accounts/Buying/Stock/Manufacturing/Assets/Crm/Support/Desk); added `phpunit.xml`,
+  `tests/TestBootstrapHelper.php` and `tests/Feature/Api/AtelierApiTest.php` (5 tests, 14 assertions passing).
+  Committed the backend baseline (git).
