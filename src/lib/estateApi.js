@@ -28,10 +28,10 @@ export function isApiEnabled() {
 }
 
 /**
- * Fetches a collection and writes it into the provided state setter.
- * Seed data remains visible until the request resolves; failures are silent.
+ * Fetches a collection and writes it into the provided state setter. Seed data
+ * remains visible until a non-empty response resolves; failures are silent.
  * @param {string} path
- * @param {(value: any) => void} setter
+ * @param {(value: unknown) => void} setter
  * @param {boolean} enabled
  */
 export function useRemoteCollection(path, setter, enabled) {
@@ -42,6 +42,6 @@ export function useRemoteCollection(path, setter, enabled) {
   });
 
   useEffect(() => {
-    if (Array.isArray(data)) setter(data);
+    if (Array.isArray(data) && data.length > 0) setter(data);
   }, [data, setter]);
 }
