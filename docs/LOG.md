@@ -21,3 +21,6 @@
   Main bundle 570 kB → 304 kB; the >500 kB build warning is resolved.
 - P4: replaced all `alert()` validation with inline `role="alert"` errors in the journal and
   stock modals, and a non-blocking notification for the clients stub. No `alert()` remains.
+- P4: added `src/hooks/useLocalStorageState.js` and replaced the 14 inline
+  `useState` + persistence `useEffect` blocks in `App.jsx`; added global Escape-to-close
+  for modals (a11y). Lint + build + 23 tests green.

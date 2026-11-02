@@ -1,6 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
+import { useLocalStorageState } from './hooks/useLocalStorageState';
 
 // Core Atelier Views (lazy-loaded for code-splitting — docs/PLAN.md §L4)
 const DashboardView = lazy(() => import('./views/DashboardView'));
@@ -73,114 +74,29 @@ export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Projects State
-  const [projects, setProjects] = useState(() => {
-    const saved = localStorage.getItem('ashara_projects');
-    return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
-  });
+  // Domain state — persisted via the shared hook (docs/PLAN.md §L4)
+  const [projects, setProjects] = useLocalStorageState('ashara_projects', INITIAL_PROJECTS);
+  const [ffeItems, setFfeItems] = useLocalStorageState('ashara_ffe', INITIAL_FFE_ITEMS);
+  const [snags, setSnags] = useLocalStorageState('ashara_snags', INITIAL_SNAGS);
+  const [invoices, setInvoices] = useLocalStorageState('ashara_invoices', INITIAL_INVOICES);
+  const [clients] = useLocalStorageState('ashara_clients', INITIAL_CLIENTS);
 
-  // 2. FF&E Specifications State
-  const [ffeItems, setFfeItems] = useState(() => {
-    const saved = localStorage.getItem('ashara_ffe');
-    return saved ? JSON.parse(saved) : INITIAL_FFE_ITEMS;
-  });
+  const [purchaseOrders, setPurchaseOrders] = useLocalStorageState('ashara_purchase_orders', INITIAL_PURCHASE_ORDERS);
+  const [suppliers] = useLocalStorageState('ashara_suppliers', INITIAL_SUPPLIERS);
+  const [stockItems, setStockItems] = useLocalStorageState('ashara_stock_items', INITIAL_STOCK_ITEMS);
+  const [warehouses] = useState(INITIAL_WAREHOUSES);
+  const [stockEntries, setStockEntries] = useLocalStorageState('ashara_stock_entries', INITIAL_STOCK_ENTRIES);
+  const [stockLedgerEntries] = useLocalStorageState('ashara_stock_ledger', INITIAL_STOCK_LEDGER_ENTRIES);
+  const [chartOfAccounts] = useState(INITIAL_CHART_OF_ACCOUNTS);
+  const [glEntries, setGlEntries] = useLocalStorageState('ashara_gl_entries', INITIAL_GL_ENTRIES);
+  const [journalEntries, setJournalEntries] = useLocalStorageState('ashara_journal_entries', INITIAL_JOURNAL_ENTRIES);
 
-  // 3. Site Snags & Quality Inspections
-  const [snags, setSnags] = useState(() => {
-    const saved = localStorage.getItem('ashara_snags');
-    return saved ? JSON.parse(saved) : INITIAL_SNAGS;
-  });
-
-  // 4. Invoices (Accounts & Billing)
-  const [invoices, setInvoices] = useState(() => {
-    const saved = localStorage.getItem('ashara_invoices');
-    return saved ? JSON.parse(saved) : INITIAL_INVOICES;
-  });
-
-  // 5. Clients CRM
-  const [clients] = useState(() => {
-    const saved = localStorage.getItem('ashara_clients');
-    return saved ? JSON.parse(saved) : INITIAL_CLIENTS;
-  });
-
-  // 6. Buying (Purchase Orders & Suppliers)
-  const [purchaseOrders, setPurchaseOrders] = useState(() => {
-    const saved = localStorage.getItem('ashara_purchase_orders');
-    return saved ? JSON.parse(saved) : INITIAL_PURCHASE_ORDERS;
-  });
-
-  const [suppliers] = useState(() => {
-    const saved = localStorage.getItem('ashara_suppliers');
-    return saved ? JSON.parse(saved) : INITIAL_SUPPLIERS;
-  });
-
-  // 7. Stock (Item Master, Warehouses & Stock Entries)
-  const [stockItems, setStockItems] = useState(() => {
-    const saved = localStorage.getItem('ashara_stock_items');
-    return saved ? JSON.parse(saved) : INITIAL_STOCK_ITEMS;
-  });
-
-  const [warehouses] = useState(() => {
-    return INITIAL_WAREHOUSES;
-  });
-
-  const [stockEntries, setStockEntries] = useState(() => {
-    const saved = localStorage.getItem('ashara_stock_entries');
-    return saved ? JSON.parse(saved) : INITIAL_STOCK_ENTRIES;
-  });
-
-  const [stockLedgerEntries, _setStockLedgerEntries] = useState(() => {
-    const saved = localStorage.getItem('ashara_stock_ledger');
-    return saved ? JSON.parse(saved) : INITIAL_STOCK_LEDGER_ENTRIES;
-  });
-
-  // 8. General Ledger & Chart of Accounts
-  const [chartOfAccounts] = useState(() => {
-    return INITIAL_CHART_OF_ACCOUNTS;
-  });
-
-  const [glEntries, setGlEntries] = useState(() => {
-    const saved = localStorage.getItem('ashara_gl_entries');
-    return saved ? JSON.parse(saved) : INITIAL_GL_ENTRIES;
-  });
-
-  const [journalEntries, setJournalEntries] = useState(() => {
-    const saved = localStorage.getItem('ashara_journal_entries');
-    return saved ? JSON.parse(saved) : INITIAL_JOURNAL_ENTRIES;
-  });
-
-  // 9. Manufacturing (BOMs & Work Orders)
-  const [boms] = useState(() => {
-    const saved = localStorage.getItem('ashara_boms');
-    return saved ? JSON.parse(saved) : INITIAL_BOMS;
-  });
-
-  const [workOrders, setWorkOrders] = useState(() => {
-    const saved = localStorage.getItem('ashara_work_orders');
-    return saved ? JSON.parse(saved) : INITIAL_WORK_ORDERS;
-  });
-
-  // 10. Assets Register
-  const [assets, setAssets] = useState(() => {
-    const saved = localStorage.getItem('ashara_assets');
-    return saved ? JSON.parse(saved) : INITIAL_ASSETS;
-  });
-
-  // 11. CRM Opportunities & Tenders
-  const [opportunities, setOpportunities] = useState(() => {
-    const saved = localStorage.getItem('ashara_opportunities');
-    return saved ? JSON.parse(saved) : INITIAL_OPPORTUNITIES;
-  });
-
-  // 12. Support & Subcontracting
-  const [issues, setIssues] = useState(() => {
-    const saved = localStorage.getItem('ashara_support_issues');
-    return saved ? JSON.parse(saved) : INITIAL_SUPPORT_ISSUES;
-  });
-
-  const [subcontractOrders] = useState(() => {
-    return INITIAL_SUBCONTRACT_ORDERS;
-  });
+  const [boms] = useLocalStorageState('ashara_boms', INITIAL_BOMS);
+  const [workOrders, setWorkOrders] = useLocalStorageState('ashara_work_orders', INITIAL_WORK_ORDERS);
+  const [assets, setAssets] = useLocalStorageState('ashara_assets', INITIAL_ASSETS);
+  const [opportunities, setOpportunities] = useLocalStorageState('ashara_opportunities', INITIAL_OPPORTUNITIES);
+  const [issues, setIssues] = useLocalStorageState('ashara_support_issues', INITIAL_SUPPORT_ISSUES);
+  const [subcontractOrders] = useState(INITIAL_SUBCONTRACT_ORDERS);
 
   // Modal State
   const [inspectingProject, setInspectingProject] = useState(null);
@@ -202,62 +118,7 @@ export default function App() {
     localStorage.setItem('ashara_theme', theme);
   }, [theme]);
 
-  // Persist State Changes
-  useEffect(() => {
-    localStorage.setItem('ashara_projects', JSON.stringify(projects));
-  }, [projects]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_ffe', JSON.stringify(ffeItems));
-  }, [ffeItems]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_snags', JSON.stringify(snags));
-  }, [snags]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_invoices', JSON.stringify(invoices));
-  }, [invoices]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_purchase_orders', JSON.stringify(purchaseOrders));
-  }, [purchaseOrders]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_stock_items', JSON.stringify(stockItems));
-  }, [stockItems]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_stock_entries', JSON.stringify(stockEntries));
-  }, [stockEntries]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_stock_ledger', JSON.stringify(stockLedgerEntries));
-  }, [stockLedgerEntries]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_gl_entries', JSON.stringify(glEntries));
-  }, [glEntries]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_journal_entries', JSON.stringify(journalEntries));
-  }, [journalEntries]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_work_orders', JSON.stringify(workOrders));
-  }, [workOrders]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_assets', JSON.stringify(assets));
-  }, [assets]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_opportunities', JSON.stringify(opportunities));
-  }, [opportunities]);
-
-  useEffect(() => {
-    localStorage.setItem('ashara_support_issues', JSON.stringify(issues));
-  }, [issues]);
+  // Persistence is handled by useLocalStorageState (see the state declarations above).
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -506,6 +367,19 @@ export default function App() {
       return issue;
     }));
   };
+
+  // Close the top-most open overlay on Escape (docs/PLAN.md §L4 a11y)
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key !== 'Escape') return;
+      if (activeModal) setActiveModal(null);
+      else if (inspectingProject) setInspectingProject(null);
+      else if (inspectingDocType) setInspectingDocType(null);
+      else if (printingInvoice) setPrintingInvoice(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [activeModal, inspectingProject, inspectingDocType, printingInvoice]);
 
   const openSnagsCount = snags.filter(s => s.status !== 'Approved & Closed').length;
 
