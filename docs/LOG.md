@@ -34,3 +34,5 @@
   Added jsdom/Testing Library setup (`vitest.config.js`, `src/test/setup.js`) and component
   tests. 27 tests passing.
 - L5: added `REGRESSION.md` (module → acceptance-command ledger; backend rows blocked).
+- L4: migrated NewOpportunityModal, NewWorkOrderModal, NewSupportIssueModal to the shared
+  accessible `Modal` + react-hook-form + Zod, with component tests. 32 tests passing.

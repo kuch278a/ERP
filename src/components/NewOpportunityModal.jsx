@@ -1,162 +1,195 @@
-import React, { useState } from 'react';
-import { X, Briefcase, Sparkles } from 'lucide-react';
+import React from 'react';
+import { Briefcase, Sparkles } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import Modal from './ui/Modal';
+import { makeDocId } from '../lib/format';
+
+// Form schema mirrors the canonical Opportunity fields (src/schemas/erpnext.js).
+const schema = z.object({
+  party_name: z.string().trim().min(1, 'Client / prospect is required'),
+  opportunity_type: z.string().min(1),
+  opportunity_amount: z.coerce.number().positive('Enter an estimated deal value'),
+  probability: z.coerce.number().min(0).max(100),
+  expected_closing: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter a valid date'),
+  contact_email: z.union([z.literal(''), z.string().email('Enter a valid email')]),
+  description: z.string(),
+});
+
+const fieldError = { color: 'var(--status-danger)', fontSize: '12px', marginTop: '4px' };
+
+function plusDays(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
 
 export default function NewOpportunityModal({ onClose, onSubmit }) {
-  const [partyName, setPartyName] = useState('');
-  const [opportunityType, setOpportunityType] = useState('Luxury Residential');
-  const [amount, setAmount] = useState('');
-  const [probability, setProbability] = useState(60);
-  const [expectedClosing, setExpectedClosing] = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 45);
-    return d.toISOString().split('T')[0];
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      opportunity_type: 'Luxury Residential',
+      probability: 60,
+      expected_closing: plusDays(45),
+      contact_email: '',
+      description: '',
+    },
   });
-  const [contactEmail, setContactEmail] = useState('');
-  const [description, setDescription] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!partyName || !amount) return;
-
-    const newOpp = {
-      id: `CRM-OPP-2026-${Math.floor(10 + Math.random() * 90)}`,
-      party_name: partyName,
-      opportunity_type: opportunityType,
-      opportunity_amount: Number(amount) || 0,
+  const submit = (data) => {
+    onSubmit({
+      id: makeDocId('CRM-OPP'),
+      party_name: data.party_name,
+      opportunity_type: data.opportunity_type,
+      opportunity_amount: Number(data.opportunity_amount),
       stage: 'Prospecting',
-      probability: Number(probability) || 50,
-      expected_closing: expectedClosing,
-      contact_email: contactEmail,
-      description: description || 'High-value bespoke architectural commission enquiry.'
-    };
-
-    onSubmit(newOpp);
+      probability: Number(data.probability),
+      expected_closing: data.expected_closing,
+      contact_email: data.contact_email,
+      description: data.description || 'High-value bespoke architectural commission enquiry.',
+    });
     onClose();
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth: '620px' }} onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--gold-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold-bright)' }}>
-              <Briefcase size={18} />
+    <Modal
+      title="Log New Opportunity / Bid"
+      subtitle="ERPNext CRM Module (DocType: Opportunity)"
+      icon={Briefcase}
+      onClose={onClose}
+      maxWidth="620px"
+    >
+      <form onSubmit={handleSubmit(submit)} noValidate>
+        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="party_name">
+              Client / Family Office Prospect *
+            </label>
+            <input
+              id="party_name"
+              type="text"
+              className="form-input"
+              placeholder="e.g. Al-Nahyan Family Office / Villa Palm Jumeirah"
+              {...register('party_name')}
+            />
+            {errors.party_name && (
+              <span role="alert" style={fieldError}>
+                {errors.party_name.message}
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="opportunity_type">
+                Commission Type *
+              </label>
+              <select id="opportunity_type" className="form-input" {...register('opportunity_type')}>
+                <option value="Luxury Residential">Luxury Residential</option>
+                <option value="Boutique Hospitality">Boutique Hospitality</option>
+                <option value="Private Commercial">Private Commercial</option>
+                <option value="Turnkey Yacht Fit-out">Turnkey Yacht Fit-out</option>
+              </select>
             </div>
-            <div>
-              <h3 className="modal-title" style={{ margin: 0 }}>Log New Opportunity / Bid</h3>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>ERPNext CRM Module (DocType: Opportunity)</span>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="opportunity_amount">
+                Estimated Deal Value ($) *
+              </label>
+              <input
+                id="opportunity_amount"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 7500000"
+                className="form-input"
+                {...register('opportunity_amount')}
+              />
+              {errors.opportunity_amount && (
+                <span role="alert" style={fieldError}>
+                  {errors.opportunity_amount.message}
+                </span>
+              )}
             </div>
           </div>
-          <button className="btn-secondary" style={{ padding: '6px' }} onClick={onClose}>
-            <X size={18} />
-          </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="probability">
+                Win Probability (%)
+              </label>
+              <input
+                id="probability"
+                type="range"
+                min="10"
+                max="100"
+                step="5"
+                className="form-input"
+                style={{ padding: '4px' }}
+                {...register('probability')}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="expected_closing">
+                Expected Decision Date *
+              </label>
+              <input id="expected_closing" type="date" className="form-input" {...register('expected_closing')} />
+              {errors.expected_closing && (
+                <span role="alert" style={fieldError}>
+                  {errors.expected_closing.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="contact_email">
+              Contact Email
+            </label>
+            <input
+              id="contact_email"
+              type="email"
+              className="form-input"
+              placeholder="vip-desk@familyoffice.ae"
+              {...register('contact_email')}
+            />
+            {errors.contact_email && (
+              <span role="alert" style={fieldError}>
+                {errors.contact_email.message}
+              </span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="description">
+              Scope Description
+            </label>
+            <textarea
+              id="description"
+              className="form-input"
+              rows={3}
+              placeholder="Project brief, total square footage, aesthetic direction..."
+              {...register('description')}
+            />
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="form-group">
-              <label className="form-label">Client / Family Office Prospect *</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. Al-Nahyan Family Office / Villa Palm Jumeirah"
-                value={partyName}
-                onChange={e => setPartyName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label">Commission Type *</label>
-                <select
-                  className="form-input"
-                  value={opportunityType}
-                  onChange={e => setOpportunityType(e.target.value)}
-                >
-                  <option value="Luxury Residential">Luxury Residential</option>
-                  <option value="Boutique Hospitality">Boutique Hospitality</option>
-                  <option value="Private Commercial">Private Commercial</option>
-                  <option value="Turnkey Yacht Fit-out">Turnkey Yacht Fit-out</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Estimated Deal Value ($) *</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1000"
-                  placeholder="e.g. 7500000"
-                  className="form-input"
-                  value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label">Win Probability ({probability}%)</label>
-                <input
-                  type="range"
-                  min="10"
-                  max="100"
-                  step="5"
-                  className="form-input"
-                  style={{ padding: '4px' }}
-                  value={probability}
-                  onChange={e => setProbability(e.target.value)}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Expected Decision Date *</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={expectedClosing}
-                  onChange={e => setExpectedClosing(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Contact Email</label>
-              <input
-                type="email"
-                className="form-input"
-                placeholder="vip-desk@familyoffice.ae"
-                value={contactEmail}
-                onChange={e => setContactEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Scope Description</label>
-              <textarea
-                className="form-input"
-                rows={3}
-                placeholder="Project brief, total square footage, aesthetic direction..."
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary">
-              <Sparkles size={16} />
-              <span>Create Opportunity</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button type="button" className="btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary">
+            <Sparkles size={16} />
+            <span>Create Opportunity</span>
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
