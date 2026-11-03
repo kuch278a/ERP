@@ -84,3 +84,23 @@
   `npm run build` succeeds and emits `public/build`. Backend repair + L3/L4 to-dos complete.
 - Hardening: protected atelier `api/v1/*` routes with Sanctum (`/health` public); API tests now
   6 (incl. 401) and pass. SPA hydration guard ignores empty responses. Frontend gates green.
+
+## 2026-11-03
+
+- Monorepo full configuration & environment provisioning:
+  - Created `.env` with `VITE_API_BASE_URL=http://localhost:8000/api/v1`.
+  - Created `backend/.env` with generated Laravel `APP_KEY`, PostgreSQL 16 connection, Sanctum domains.
+  - Enhanced frontend `vite.config.js`: added `@/` path alias, `/api` proxy to Laravel on port 8000, and function-based `manualChunks` for rolldown/Vite 8.
+  - Updated `tsconfig.json` path mappings for TypeScript 7 compatibility.
+  - Scoped `oxlint src` in `package.json` and added `.oxlintignore`.
+  - Installed `@tailwindcss/vite` in `backend/` and verified backend Vite 5 + Tailwind v4 build.
+  - Provisioned `backend/vendor` via `composer install` (220 packages) and dumped optimized autoloader.
+  - Started user-owned PostgreSQL 16 instance on `127.0.0.1:5432`; verified migrations (~80 tables active).
+  - Added root helper scripts (`backend:dev`, `backend:build`, `backend:test`, `backend:serve`, `test:all`).
+  - Added PostgreSQL tables, Eloquent models, and seeders for core atelier entities: `atelier_projects`, `atelier_ffe_items`, `atelier_snags`, `atelier_invoices`, `atelier_clients`.
+  - Implemented RESTful controllers (`ProjectsController`, `FfeController`, `SnagsController`, `InvoicesController`, `ClientsController`, `AuthController`).
+  - Implemented token authentication handling in `src/lib/apiClient.ts` with Sanctum session bootstrap.
+  - Added store mutation endpoints across buying, stock, manufacturing, assets, CRM, and support controllers.
+  - Implemented `NewClientModal.jsx` with react-hook-form + Zod validation and component tests.
+  - Added two-way mutation syncing in `src/hooks/useEstate.js` and hydrated atelier entities in React Query.
+  - Full suite verified: 58 frontend tests passing (Vitest) with coverage gates passed; 12 backend feature tests passing (Pest).

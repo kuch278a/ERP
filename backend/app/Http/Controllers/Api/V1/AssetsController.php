@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class AssetsController extends Controller
 {
@@ -14,5 +15,28 @@ class AssetsController extends Controller
         ];
 
         return response()->json(['message' => 'success', 'data' => $assets]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'nullable|string',
+            'asset_name' => 'required|string',
+            'item_code' => 'nullable|string',
+            'gross_purchase_amount' => 'required|numeric|min:0',
+            'purchase_date' => 'nullable|date',
+            'status' => 'nullable|string',
+        ]);
+
+        if (empty($data['id'])) {
+            $data['id'] = 'AST-NEW-' . rand(100, 999);
+        }
+        $data['current_value'] = $data['gross_purchase_amount'];
+        $data['opening_accumulated_depreciation'] = 0;
+
+        return response()->json([
+            'message' => 'Asset registered successfully',
+            'data' => $data,
+        ], 201);
     }
 }

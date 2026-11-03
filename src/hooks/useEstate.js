@@ -25,6 +25,7 @@ import {
 } from '../data/erpnextSchemas';
 import { useLocalStorageState } from './useLocalStorageState';
 import { ESTATE_ENDPOINTS, isApiEnabled, useRemoteCollection } from '../lib/estateApi';
+import { api } from '../lib/apiClient';
 
 /**
  * Domain state + mutation handlers for the app (docs/PLAN.md §L4 decomposition).
@@ -35,7 +36,7 @@ export function useEstate() {
   const [ffeItems, setFfeItems] = useLocalStorageState('ashara_ffe', INITIAL_FFE_ITEMS);
   const [snags, setSnags] = useLocalStorageState('ashara_snags', INITIAL_SNAGS);
   const [invoices, setInvoices] = useLocalStorageState('ashara_invoices', INITIAL_INVOICES);
-  const [clients] = useLocalStorageState('ashara_clients', INITIAL_CLIENTS);
+  const [clients, setClients] = useLocalStorageState('ashara_clients', INITIAL_CLIENTS);
 
   const [purchaseOrders, setPurchaseOrders] = useLocalStorageState('ashara_purchase_orders', INITIAL_PURCHASE_ORDERS);
   const [suppliers, setSuppliers] = useLocalStorageState('ashara_suppliers', INITIAL_SUPPLIERS);
@@ -56,30 +57,51 @@ export function useEstate() {
 
   const handleCreateProject = (newProject) => {
     setProjects((prev) => [newProject, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.projects, newProject).catch(() => {});
+    }
   };
 
   const handleCreateFfe = (newItem) => {
     setFfeItems((prev) => [newItem, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.ffeItems, newItem).catch(() => {});
+    }
   };
 
   const handleToggleSample = (id) => {
     setFfeItems((prev) => prev.map((item) => (item.id === id ? { ...item, sampleApproved: !item.sampleApproved } : item)));
+    if (isApiEnabled()) {
+      api.post(`/ffe/${id}/toggle-sample`).catch(() => {});
+    }
   };
 
   const handleUpdateFfeStatus = (id, newStatus) => {
     setFfeItems((prev) => prev.map((item) => (item.id === id ? { ...item, poStatus: newStatus } : item)));
+    if (isApiEnabled()) {
+      api.patch(`/ffe/${id}/status`, { poStatus: newStatus }).catch(() => {});
+    }
   };
 
   const handleCreateSnag = (newSnag) => {
     setSnags((prev) => [newSnag, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.snags, newSnag).catch(() => {});
+    }
   };
 
   const handleUpdateSnagStatus = (id, newStatus) => {
     setSnags((prev) => prev.map((snag) => (snag.id === id ? { ...snag, status: newStatus } : snag)));
+    if (isApiEnabled()) {
+      api.patch(`/snags/${id}/status`, { status: newStatus }).catch(() => {});
+    }
   };
 
   const handleCreateInvoice = (newInv) => {
     setInvoices((prev) => [newInv, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.invoices, newInv).catch(() => {});
+    }
 
     // Post double-entry General Ledger rows for the sales invoice.
     const newGleDr = {
@@ -152,10 +174,24 @@ export function useEstate() {
         return { ...inv, status: nextStatus };
       })
     );
+
+    if (isApiEnabled()) {
+      api.post(`/invoices/${id}/toggle-paid`).catch(() => {});
+    }
+  };
+
+  const handleCreateClient = (newClient) => {
+    setClients((prev) => [newClient, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.clients, newClient).catch(() => {});
+    }
   };
 
   const handleCreatePO = (newPO) => {
     setPurchaseOrders((prev) => [newPO, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.purchaseOrders, newPO).catch(() => {});
+    }
   };
 
   const handleUpdatePOStatus = (poId, nextStatus) => {
@@ -164,6 +200,9 @@ export function useEstate() {
 
   const handleCreateStockEntry = (newEntry) => {
     setStockEntries((prev) => [newEntry, ...prev]);
+    if (isApiEnabled()) {
+      api.post('/stock/entries', newEntry).catch(() => {});
+    }
 
     setStockItems((prev) =>
       prev.map((item) => {
@@ -200,6 +239,9 @@ export function useEstate() {
 
   const handleCreateJournalEntry = (newJV) => {
     setJournalEntries((prev) => [newJV, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.journalEntries, newJV).catch(() => {});
+    }
 
     const newGleRows = newJV.accounts.map((accRow, idx) => ({
       id: `GLE-2026-${Math.floor(100 + Math.random() * 900)}-${idx}`,
@@ -220,6 +262,9 @@ export function useEstate() {
 
   const handleCreateWorkOrder = (newWO) => {
     setWorkOrders((prev) => [newWO, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.workOrders, newWO).catch(() => {});
+    }
   };
 
   const handleUpdateWorkOrderStatus = (woId, nextStatus) => {
@@ -230,10 +275,16 @@ export function useEstate() {
 
   const handleCreateAsset = (newAsset) => {
     setAssets((prev) => [newAsset, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.assets, newAsset).catch(() => {});
+    }
   };
 
   const handleCreateOpportunity = (newOpp) => {
     setOpportunities((prev) => [newOpp, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.opportunities, newOpp).catch(() => {});
+    }
   };
 
   const handleUpdateOpportunityStage = (oppId, nextStage) => {
@@ -242,6 +293,9 @@ export function useEstate() {
 
   const handleCreateIssue = (newIssue) => {
     setIssues((prev) => [newIssue, ...prev]);
+    if (isApiEnabled()) {
+      api.post(ESTATE_ENDPOINTS.issues, newIssue).catch(() => {});
+    }
   };
 
   const handleUpdateIssueStatus = (issueId, nextStatus) => {
@@ -250,6 +304,11 @@ export function useEstate() {
 
   // Background hydration from the v1 API (seed data stays until it resolves).
   const apiEnabled = isApiEnabled();
+  useRemoteCollection(ESTATE_ENDPOINTS.projects, setProjects, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.ffeItems, setFfeItems, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.snags, setSnags, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.invoices, setInvoices, apiEnabled);
+  useRemoteCollection(ESTATE_ENDPOINTS.clients, setClients, apiEnabled);
   useRemoteCollection(ESTATE_ENDPOINTS.purchaseOrders, setPurchaseOrders, apiEnabled);
   useRemoteCollection(ESTATE_ENDPOINTS.suppliers, setSuppliers, apiEnabled);
   useRemoteCollection(ESTATE_ENDPOINTS.stockItems, setStockItems, apiEnabled);
@@ -287,7 +346,7 @@ export function useEstate() {
     subcontractOrders,
   };
 
-  const setters = { setProjects };
+  const setters = { setProjects, setClients };
 
   const handlers = {
     handleCreateProject,
@@ -298,6 +357,7 @@ export function useEstate() {
     handleUpdateSnagStatus,
     handleCreateInvoice,
     handleToggleInvoicePaid,
+    handleCreateClient,
     handleCreatePO,
     handleUpdatePOStatus,
     handleCreateStockEntry,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class BuyingController extends Controller
 {
@@ -27,5 +28,29 @@ class BuyingController extends Controller
         ];
 
         return response()->json(['message' => 'success', 'data' => $pos]);
+    }
+
+    public function storePurchaseOrder(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'nullable|string',
+            'supplier_name' => 'required|string',
+            'projectName' => 'nullable|string',
+            'project' => 'nullable|string',
+            'transaction_date' => 'nullable|date',
+            'schedule_date' => 'nullable|date',
+            'status' => 'nullable|string',
+            'items' => 'nullable|array',
+            'grand_total' => 'nullable|numeric',
+        ]);
+
+        if (empty($data['id'])) {
+            $data['id'] = 'PO-' . date('Y') . '-' . rand(100, 999);
+        }
+
+        return response()->json([
+            'message' => 'Purchase Order created successfully',
+            'data' => $data,
+        ], 201);
     }
 }

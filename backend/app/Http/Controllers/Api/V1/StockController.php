@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class StockController extends Controller
 {
@@ -38,5 +39,29 @@ class StockController extends Controller
         ];
 
         return response()->json(['message' => 'success', 'data' => $ledger]);
+    }
+
+    public function storeStockEntry(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'nullable|string',
+            'purpose' => 'required|string',
+            'posting_date' => 'required|date',
+            'from_warehouse' => 'nullable|string',
+            'to_warehouse' => 'nullable|string',
+            'project' => 'nullable|string',
+            'projectName' => 'nullable|string',
+            'items' => 'required|array',
+            'total_outgoing_value' => 'nullable|numeric',
+        ]);
+
+        if (empty($data['id'])) {
+            $data['id'] = 'STE-' . date('Y') . '-' . rand(100, 999);
+        }
+
+        return response()->json([
+            'message' => 'Stock entry created successfully',
+            'data' => $data,
+        ], 201);
     }
 }

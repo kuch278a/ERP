@@ -94,16 +94,7 @@ export default function App() {
             onUpdateOpportunityStage: handlers.handleUpdateOpportunityStage,
             onUpdateIssueStatus: handlers.handleUpdateIssueStatus,
             onOpenDocTypeInspector: (dt) => overlay.setInspectingDocType(dt || 'sales_invoice'),
-            onOpenNewClient: () =>
-              ui.setNotifications((prev) => [
-                {
-                  id: Date.now(),
-                  title: 'Client onboarding',
-                  message: 'The new-client form is not yet available.',
-                  type: 'info',
-                },
-                ...prev,
-              ]),
+            onOpenNewClient: () => overlay.setActiveModal('newClient'),
           }}
         />
       </div>
@@ -139,6 +130,7 @@ export default function App() {
             ffe: handlers.handleCreateFfe,
             snag: handlers.handleCreateSnag,
             invoice: handlers.handleCreateInvoice,
+            client: handlers.handleCreateClient,
             po: handlers.handleCreatePO,
             stockEntry: handlers.handleCreateStockEntry,
             journalEntry: handlers.handleCreateJournalEntry,

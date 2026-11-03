@@ -14,6 +14,7 @@ const NewWorkOrderModal = lazy(() => import('./NewWorkOrderModal'));
 const NewAssetModal = lazy(() => import('./NewAssetModal'));
 const NewOpportunityModal = lazy(() => import('./NewOpportunityModal'));
 const NewSupportIssueModal = lazy(() => import('./NewSupportIssueModal'));
+const NewClientModal = lazy(() => import('./NewClientModal'));
 
 /**
  * Renders the active modal(s) (docs/PLAN.md §L4). `state`, `data`, and `handlers`
@@ -55,6 +56,10 @@ export default function ModalRouter({ state, data, handlers }) {
 
       {activeModal === 'newInvoice' && (
         <NewInvoiceModal onClose={closeModal} onSubmit={create.invoice} projects={projects} />
+      )}
+
+      {activeModal === 'newClient' && (
+        <NewClientModal onClose={closeModal} onSubmit={create.client} />
       )}
 
       {activeModal === 'newPO' && (

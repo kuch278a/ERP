@@ -1,9 +1,30 @@
 /**
  * Thin REST client for the Laravel/AureusERP v1 API (see docs/PLAN.md §L3).
- * Unwraps the standard `{ success, data, meta, error }` envelope.
+ * Unwraps the standard `{ success, data, meta, error }` envelope and manages Sanctum bearer tokens.
  */
 
 const BASE_URL: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const TOKEN_KEY = 'ashara_auth_token';
+
+export function getAuthToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token: string | null): void {
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  } catch {
+    // Ignore storage quota/security restrictions in test environments
+  }
+}
 
 export class ApiError extends Error {
   status: number;
@@ -25,13 +46,15 @@ export interface RequestOptions {
 }
 
 async function request(path: string, { method = 'GET', body, token, signal }: RequestOptions = {}): Promise<any> {
+  const authToken = token || getAuthToken();
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     signal,
     headers: {
       Accept: 'application/json',
       ...(body ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -48,8 +71,29 @@ async function request(path: string, { method = 'GET', body, token, signal }: Re
 
 export const api = {
   get: (path: string, opts?: RequestOptions) => request(path, { ...opts, method: 'GET' }),
-  post: (path: string, body: unknown, opts?: RequestOptions) => request(path, { ...opts, method: 'POST', body }),
-  put: (path: string, body: unknown, opts?: RequestOptions) => request(path, { ...opts, method: 'PUT', body }),
-  patch: (path: string, body: unknown, opts?: RequestOptions) => request(path, { ...opts, method: 'PATCH', body }),
+  post: (path: string, body?: unknown, opts?: RequestOptions) => request(path, { ...opts, method: 'POST', body }),
+  put: (path: string, body?: unknown, opts?: RequestOptions) => request(path, { ...opts, method: 'PUT', body }),
+  patch: (path: string, body?: unknown, opts?: RequestOptions) => request(path, { ...opts, method: 'PATCH', body }),
   del: (path: string, opts?: RequestOptions) => request(path, { ...opts, method: 'DELETE' }),
+
+  login: async (email: string, password = 'password') => {
+    const res = await request('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    });
+    if (res?.token) {
+      setAuthToken(res.token);
+    }
+    return res;
+  },
+
+  logout: async () => {
+    try {
+      await request('/auth/logout', { method: 'POST' });
+    } finally {
+      setAuthToken(null);
+    }
+  },
+
+  getMe: () => request('/auth/me', { method: 'GET' }),
 };

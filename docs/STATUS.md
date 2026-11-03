@@ -1,13 +1,31 @@
 # STATUS
 
-**Updated:** 2026-11-02
+**Updated:** 2026-11-03
 
 ## Where we are
 
-- **Phase:** P0 (Ground) — in progress.
-- **SPA:** feature-complete mock prototype; mock-data + `localStorage`; moving to v1 REST API.
+- **Phase:** L0–L5 Full-Stack Monorepo Complete & Verified Green.
+- **Frontend SPA:** Feature-complete atelier ERP with React Query v1 API hydration, TypeScript 7 strict mode, code-split Vite 8 bundles, modular view architecture (`financials/`, `stock/`), 58 passing unit & component tests meeting coverage floors, and Playwright E2E smoke tests passing.
+- **Backend:** Laravel 13.31 + AureusERP running on PostgreSQL 16; Sanctum auth; Atelier Eloquent migrations & seeders; 12 Pest API feature tests passing (37 assertions).
 
 ## Done
+
+- [x] Full monorepo configuration: `.env`, `backend/.env` (app key, pgsql, Sanctum domains).
+- [x] Vite 8 configuration with path aliases (`@/`), API dev proxy, and chunking strategy.
+- [x] TypeScript paths (`tsconfig.json`) configured for TS 7.
+- [x] Scoped `oxlint src` + `.oxlintignore`.
+- [x] Tailwind CSS v4 Vite integration for backend Filament asset pipeline (`backend/vite.config.js`).
+- [x] Backend Composer dependencies (220 packages) installed and optimized autoloader generated.
+- [x] PostgreSQL 16 cluster online (`127.0.0.1:5432`); migrations verified.
+- [x] Unified root scripts for monorepo testing and development (`backend:dev`, `backend:build`, `backend:test`, `backend:serve`, `test:all`).
+- [x] Atelier database migrations (`atelier_projects`, `atelier_ffe_items`, `atelier_snags`, `atelier_invoices`, `atelier_clients`) and seeders (`AtelierSeeder.php`).
+- [x] Atelier Eloquent models (`Project`, `FfeItem`, `Snag`, `Invoice`, `Client`) and API v1 controllers with Sanctum token auth.
+- [x] Missing client modal (`NewClientModal.jsx`) built with `react-hook-form` + `zod` and unit tested.
+- [x] Decomposed `FinancialsView.jsx` into 7 sub-tab components under `src/views/financials/`.
+- [x] Decomposed `StockView.jsx` into 4 sub-tab components under `src/views/stock/`.
+- [x] Playwright E2E smoke tests verified green (`npm run e2e`: 3 passed).
+- [x] Frontend Vitest suite green: 58 passed across 20 test files, 100% of coverage floors exceeded.
+- [x] Backend Pest suite green: 12 passed (37 assertions).
 
 - [x] `docs/PLAN.md` written (bottom-up L0–L6).
 - [x] Topology decisions locked (backend = AureusERP; SPA canonical = `ERP/src`; plugin-first).

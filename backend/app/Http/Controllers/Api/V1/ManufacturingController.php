@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class ManufacturingController extends Controller
 {
@@ -24,5 +25,28 @@ class ManufacturingController extends Controller
         ];
 
         return response()->json(['message' => 'success', 'data' => $workOrders]);
+    }
+
+    public function storeWorkOrder(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'nullable|string',
+            'bom_no' => 'nullable|string',
+            'production_item' => 'required|string',
+            'qty' => 'required|numeric|min:1',
+            'project' => 'nullable|string',
+            'planned_start_date' => 'nullable|date',
+            'planned_end_date' => 'nullable|date',
+            'status' => 'nullable|string',
+        ]);
+
+        if (empty($data['id'])) {
+            $data['id'] = 'MFG-WO-' . date('Y') . '-' . rand(100, 999);
+        }
+
+        return response()->json([
+            'message' => 'Work order created successfully',
+            'data' => $data,
+        ], 201);
     }
 }

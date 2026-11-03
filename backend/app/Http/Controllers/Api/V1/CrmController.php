@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class CrmController extends Controller
 {
@@ -15,5 +16,26 @@ class CrmController extends Controller
         ];
 
         return response()->json(['message' => 'success', 'data' => $opps]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'id' => 'nullable|string',
+            'title' => 'required|string',
+            'client' => 'required|string',
+            'stage' => 'nullable|string',
+            'opportunity_amount' => 'required|numeric|min:0',
+            'probability' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        if (empty($data['id'])) {
+            $data['id'] = 'CRM-OPP-' . date('Y') . '-' . rand(100, 999);
+        }
+
+        return response()->json([
+            'message' => 'Opportunity created successfully',
+            'data' => $data,
+        ], 201);
     }
 }
